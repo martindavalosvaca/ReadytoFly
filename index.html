@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReadytoFly - Evidence-Based Fear of Flying Program</title>
+    
+    <!-- 
+    ============================================
+    REFACTORED: ReadytoFly MVP Website
+    ============================================
+    
+    What changed:
+    • Implemented new color palette with CSS variables (peach, coral, lavender, sky)
+    • Added sticky glass navbar with backdrop blur effect
+    • Implemented smooth scroll with proper hash management
+    • Added IntersectionObserver for active section highlighting
+    • Created gradient buttons using the new palette
+    • Added mobile menu with hamburger toggle and accessible controls
+    • Cleaned up duplicate CSS and removed unused code
+    • Improved CSS organization (Tokens → Base → Layout → Components → Utilities)
+    • Enhanced accessibility with focus rings and ARIA attributes
+    • Added prefers-reduced-motion support
+    • Fixed responsive design issues
+    
+    How to edit:
+    • Colors: Modify CSS variables in :root (--peach, --coral, --lavender, --sky, etc.)
+    • Spacing: Adjust --space-* variables in :root
+    • Component styles: Find in COMPONENTS section
+    • JS behavior: Scroll to JAVASCRIPT section at bottom
+    -->
+    
+    <style>
+        /* ============================================
+           DESIGN TOKENS
+           ============================================ */
+        :root {
+            /* Brand Colors */
+            --peach: #FFD6B0;
+            --coral: #FF7B73;
+            --lavender: #C8B6FF;
+            --sky: #A7D8FF;
+            --sky-100: #E6F3FF;
+            --white: #FFFFFF;
+            
+            /* Dark Colors */
+            --dark-blue: #1F2A44;
+            
+            /* Neutrals */
+            --ink-900: #1F2A44;
+            --ink-600: #475569;
+            --ink-400: #94A3B8;
+            --bg-100: #F8FAFC;
+            
+            /* Semantic Colors */
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            
+            /* Typography Scale */
+            --font-xs: 0.75rem;
+            --font-sm: 0.875rem;
+            --font-base: 1rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.25rem;
+            --font-2xl: 1.5rem;
+            --font-3xl: 2rem;
+            --font-4xl: 2.5rem;
+            --font-5xl: 3rem;
+            
+            /* Font Weights */
+            --font-normal: 400;
+            --font-medium: 500;
+            --font-semibold: 600;
+            --font-bold: 700;
+            
+            /* Spacing Scale */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            --space-4xl: 6rem;
+            
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 50px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            
+            /* Z-Index Scale */
+            --z-base: 1;
+            --z-dropdown: 100;
+            --z-sticky: 900;
+            --z-overlay: 999;
+            --z-modal: 1000;
+            --z-tooltip: 1100;
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-base: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: var(--font-base);
+            line-height: 1.6;
+            color: var(--ink-600);
+            background: var(--white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: var(--font-bold);
+            line-height: 1.2;
+            color: var(--ink-900);
+        }
+
+        h1 { font-size: var(--font-5xl); }
+        h2 { font-size: var(--font-4xl); }
+        h3 { font-size: var(--font-3xl); }
+        h4 { font-size: var(--font-2xl); }
+        h5 { font-size: var(--font-xl); }
+        h6 { font-size: var(--font-lg); }
+
+        a {
+            color: var(--coral);
+            text-decoration: none;
+            transition: opacity var(--transition-fast);
+        }
+
+        a:hover {
+            opacity: 0.8;
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-xl);
+        }
+
+        /* ============================================
+           COMPONENTS
+           ============================================ */
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: var(--space-md) var(--space-2xl);
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            color: var(--white);
+            font-weight: var(--font-semibold);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-size: var(--font-lg);
+        }
+        
+        .btn--white {
+            background: var(--white);
+            color: var(--ink-900);
+        }
+        
+        .btn--white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.9);
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 123, 115, 0.4);
+            opacity: 1;
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid var(--coral);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            color: var(--white);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            z-index: var(--z-tooltip);
+        }
+
+        .skip-link:focus {
+            top: var(--space-md);
+            left: var(--space-md);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--coral), var(--lavender));
+            z-index: var(--z-modal);
+            transition: width var(--transition-base);
+        }
+
+        /* Header - Glass Navbar */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: transparent;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: var(--z-overlay);
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all var(--transition-base);
+        }
+
+        .header--scrolled {
+            padding: var(--space-sm) 0;
+            background: rgba(31, 42, 68, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .header__nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header__logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .header__logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .header__menu {
+            display: flex;
+            list-style: none;
+            gap: var(--space-2xl);
+            align-items: center;
+        }
+
+        .header__link {
+            color: var(--white);
+            font-weight: var(--font-medium);
+            transition: color var(--transition-fast);
+            position: relative;
+        }
+
+        .header__link:hover {
+            color: var(--sky);
+            opacity: 1;
+        }
+
+        .header__link.active {
+            color: var(--sky);
+        }
+
+        .header__link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--coral), var(--lavender));
+        }
+
+        .header__cta {
+            background: var(--white);
+            color: var(--ink-900) !important;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            font-weight: var(--font-semibold);
+        }
+
+        .header__cta:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--white);
+            transition: all var(--transition-fast);
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding-top: calc(70px + var(--space-4xl));
+            padding-bottom: var(--space-4xl);
+            background-image: 
+                linear-gradient(to bottom, 
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0) 75%,
+                    rgba(255, 255, 255, 0.3) 85%,
+                    rgba(255, 255, 255, 0.6) 90%,
+                    rgba(255, 255, 255, 0.85) 95%,
+                    rgba(255, 255, 255, 1) 100%),
+                url('./images/hero-background.png');
+            background-size: cover;
+            background-position: center 20%;
+            background-repeat: no-repeat;
+            position: relative;
+            min-height: 90vh;
+        }
+        
+        /* Remove the overlay since we have a gradient now */
+
+        .hero__container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: var(--z-base);
+            min-height: 70vh;
+            margin-top: -3rem;
+        }
+
+        .hero__content {
+            background: transparent;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: var(--space-2xl);
+            border-radius: var(--radius-lg);
+            max-width: 550px;
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero__content h1 {
+            margin-bottom: var(--space-lg);
+            color: var(--white);
+        }
+
+        .hero__content h1 .accent {
+            background: linear-gradient(135deg, var(--peach), var(--coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero__subtitle {
+            font-size: var(--font-xl);
+            margin-bottom: var(--space-lg);
+            color: var(--white);
+        }
+
+        .hero__promise {
+            margin-bottom: var(--space-2xl);
+            color: var(--white);
+        }
+
+        .hero__stats {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+            color: var(--white);
+        }
+
+        .hero__stars {
+            color: var(--warning);
+            font-size: var(--font-xl);
+        }
+
+        /* Evidence Section */
+        .evidence {
+            background: var(--white);
+            color: var(--ink-600);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .evidence__container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-3xl);
+            align-items: center;
+        }
+
+        .evidence__content {
+            padding-right: var(--space-xl);
+        }
+
+        .evidence h2 {
+            text-align: left;
+            margin-bottom: var(--space-xl);
+            color: var(--ink-900);
+        }
+
+        .evidence h2 .line1 {
+            display: block;
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-sm);
+        }
+
+        .evidence h2 .line2 {
+            display: block;
+            color: var(--ink-900);
+        }
+
+        .evidence__intro {
+            text-align: left;
+            font-size: var(--font-lg);
+            line-height: 1.7;
+            color: var(--ink-600);
+        }
+
+        .evidence__intro p {
+            margin-bottom: var(--space-md);
+        }
+
+        .evidence__intro a {
+            color: var(--coral);
+            text-decoration: underline;
+        }
+
+        .evidence__stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-xl);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--sky-100), rgba(200, 182, 255, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(167, 216, 255, 0.3);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            text-align: left;
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(167, 216, 255, 0.3);
+        }
+
+        .stat-card__number {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-sm);
+            display: block;
+        }
+
+        .stat-card__label {
+            font-size: var(--font-base);
+            color: var(--ink-600);
+            line-height: 1.4;
+        }
+
+        .evidence__cta {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: var(--space-2xl);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background: var(--bg-100);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonials__hero {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .testimonials__stars {
+            color: var(--warning);
+            font-size: var(--font-2xl);
+            margin-bottom: var(--space-md);
+            display: block;
+        }
+
+        .testimonials__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .testimonials__subtitle {
+            font-size: var(--font-lg);
+            color: var(--ink-600);
+        }
+
+        .testimonials__grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            border: 1px solid rgba(167, 216, 255, 0.2);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 123, 115, 0.15);
+            border-color: var(--coral);
+        }
+
+        .testimonial-card__stars {
+            color: var(--warning);
+            font-size: var(--font-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .testimonial-card__title {
+            font-size: var(--font-lg);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-md);
+            line-height: 1.4;
+        }
+
+        .testimonial-card__review {
+            color: var(--ink-600);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+            flex-grow: 1;
+        }
+
+        .testimonial-card__author {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-top: auto;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--sky-100);
+        }
+
+        .testimonial-card__avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: var(--font-bold);
+            flex-shrink: 0;
+        }
+
+        .testimonial-card__author-info {
+            flex-grow: 1;
+        }
+
+        .testimonial-card__author-name {
+            color: var(--ink-900);
+            font-weight: var(--font-semibold);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .testimonial-card__date {
+            color: var(--ink-400);
+            font-size: var(--font-sm);
+        }
+
+        /* Features Section */
+        .features {
+            background: var(--white);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+        }
+
+        .features__header {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto var(--space-3xl);
+        }
+
+        .features__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+        }
+
+        .features__subtitle {
+            font-size: var(--font-lg);
+            color: var(--ink-600);
+            line-height: 1.6;
+        }
+
+        .features__grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-3xl);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            text-align: left;
+            padding: var(--space-xl);
+            background: var(--bg-100);
+            border: 1px solid rgba(167, 216, 255, 0.2);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-base);
+        }
+
+        .feature-card:hover {
+            background: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 123, 115, 0.15);
+            border-color: var(--coral);
+        }
+
+        .feature-card__icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 0 var(--space-lg) 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-2xl);
+        }
+
+        .feature-card__icon--assessment {
+            background: linear-gradient(135deg, var(--lavender), var(--sky));
+            color: var(--white);
+        }
+
+        .feature-card__icon--program {
+            background: linear-gradient(135deg, var(--success), #34D399);
+            color: var(--white);
+        }
+
+        .feature-card__icon--experts {
+            background: linear-gradient(135deg, var(--peach), var(--coral));
+            color: var(--white);
+        }
+
+        .feature-card__icon--virtual {
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            color: var(--white);
+        }
+
+        .feature-card__title {
+            font-size: var(--font-xl);
+            font-weight: var(--font-semibold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-md);
+        }
+
+        .feature-card__description {
+            color: var(--ink-600);
+            line-height: 1.6;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            background: var(--bg-100);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+        }
+
+        .comparison__header {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .comparison__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .comparison__title .accent {
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-style: italic;
+        }
+
+        .comparison__subtitle {
+            font-size: var(--font-lg);
+            color: var(--ink-600);
+        }
+
+        .comparison__table {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .comparison__table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison__table thead th {
+            padding: var(--space-lg);
+            background: var(--white);
+            font-weight: var(--font-semibold);
+            color: var(--ink-900);
+            text-align: center;
+            border-bottom: 2px solid var(--sky-100);
+            font-size: var(--font-lg);
+        }
+
+        .comparison__table thead th:first-child {
+            background: transparent;
+            border-right: 1px solid var(--sky-100);
+        }
+
+        .comparison__table thead th:nth-child(2) {
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            color: var(--white);
+            position: relative;
+        }
+
+        .comparison__table thead th:nth-child(2) .logo-icon {
+            display: block;
+            margin: 0 auto var(--space-sm);
+            width: 40px;
+            height: 40px;
+        }
+
+        .comparison__table tbody tr {
+            border-bottom: 1px solid var(--sky-100);
+        }
+
+        .comparison__table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .comparison__table tbody td {
+            padding: var(--space-md) var(--space-lg);
+            text-align: center;
+        }
+
+        .comparison__table tbody td:first-child {
+            text-align: left;
+            font-weight: var(--font-medium);
+            color: var(--ink-900);
+            background: var(--bg-100);
+        }
+
+        .comparison__table tbody td:nth-child(2) {
+            background: rgba(255, 123, 115, 0.05);
+            font-weight: var(--font-semibold);
+        }
+
+        .comparison__check {
+            color: var(--success);
+            font-size: var(--font-2xl);
+            font-weight: var(--font-bold);
+        }
+
+        .comparison__cross {
+            color: var(--error);
+            font-size: var(--font-2xl);
+            font-weight: var(--font-bold);
+        }
+
+        .comparison__cta {
+            text-align: center;
+            margin-top: var(--space-2xl);
+        }
+
+        /* Advisors Section */
+        .advisors {
+            background: var(--white);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+        }
+
+        .advisors__header {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto var(--space-3xl);
+        }
+
+        .advisors__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-lg);
+        }
+
+        .advisors__subtitle {
+            font-size: var(--font-lg);
+            color: var(--ink-600);
+            line-height: 1.6;
+        }
+
+        .advisors__grid {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-3xl);
+            max-width: 1000px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .advisor-card {
+            text-align: center;
+            max-width: 400px;
+            background: var(--bg-100);
+            padding: var(--space-2xl);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(167, 216, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all var(--transition-base);
+        }
+
+        .advisor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 123, 115, 0.15);
+            border-color: var(--coral);
+            background: var(--white);
+        }
+
+        .advisor-card__image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sky-100), var(--lavender));
+            margin: 0 auto var(--space-lg);
+            overflow: hidden;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .advisor-card__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .advisor-card__name {
+            font-size: var(--font-xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .advisor-card__title {
+            font-size: var(--font-base);
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-xs);
+            font-weight: var(--font-semibold);
+        }
+
+        .advisor-card__role {
+            font-size: var(--font-sm);
+            color: var(--ink-600);
+            font-style: italic;
+            margin-bottom: var(--space-lg);
+        }
+
+        .advisor-card__bio {
+            color: var(--ink-600);
+            line-height: 1.6;
+            text-align: left;
+            font-size: var(--font-sm);
+        }
+
+        .advisor-card__bio li {
+            margin-bottom: var(--space-xs);
+            list-style: none;
+            position: relative;
+            padding-left: var(--space-lg);
+        }
+
+        .advisor-card__bio li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--coral);
+        }
+
+        /* FAQ Section */
+        .faq {
+            background: var(--bg-100);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+        }
+
+        .faq__container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--space-3xl);
+            align-items: start;
+        }
+
+        .faq__header {
+            position: sticky;
+            top: 100px;
+        }
+
+        .faq__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-md);
+        }
+
+        .faq__subtitle {
+            color: var(--ink-600);
+            line-height: 1.6;
+        }
+
+        .faq__contact {
+            color: var(--coral);
+            text-decoration: none;
+            font-weight: var(--font-medium);
+        }
+
+        .faq__contact:hover {
+            text-decoration: underline;
+        }
+
+        .faq__items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .faq__item {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid rgba(167, 216, 255, 0.2);
+            transition: all var(--transition-base);
+        }
+
+        .faq__item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .faq__question {
+            width: 100%;
+            padding: var(--space-lg) var(--space-xl);
+            background: var(--white);
+            border: none;
+            text-align: left;
+            font-size: var(--font-lg);
+            font-weight: var(--font-semibold);
+            color: var(--ink-900);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition-base);
+        }
+
+        .faq__question:hover {
+            background: var(--bg-100);
+        }
+
+        .faq__question::after {
+            content: '▾';
+            font-size: var(--font-xl);
+            color: var(--ink-400);
+            transition: transform var(--transition-base);
+        }
+
+        .faq__item--active .faq__question::after {
+            transform: rotate(180deg);
+        }
+
+        .faq__answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-base);
+        }
+
+        .faq__item--active .faq__answer {
+            max-height: 500px;
+        }
+
+        .faq__answer-content {
+            padding: 0 var(--space-xl) var(--space-lg);
+            color: var(--ink-600);
+            line-height: 1.6;
+        }
+
+        /* Resources Section */
+        .resources {
+            background: var(--white);
+            padding: var(--space-4xl) var(--space-xl);
+            position: relative;
+        }
+
+        .resources__container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-3xl);
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .resources__image {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--sky-100), var(--lavender));
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .resources__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .resources__content {
+            padding-left: var(--space-xl);
+        }
+
+        .resources__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            color: var(--ink-900);
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+        }
+
+        .resources__title-accent {
+            display: block;
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: var(--space-sm);
+        }
+
+        .resources__intro {
+            font-size: var(--font-lg);
+            color: var(--ink-600);
+            margin-bottom: var(--space-xl);
+            line-height: 1.6;
+        }
+
+        .resources__list {
+            list-style: none;
+            margin-bottom: var(--space-xl);
+        }
+
+        .resources__list li {
+            color: var(--ink-600);
+            margin-bottom: var(--space-md);
+            line-height: 1.6;
+        }
+
+        .resources__list strong {
+            color: var(--ink-900);
+        }
+
+        .resources__description {
+            color: var(--ink-600);
+            margin-bottom: var(--space-lg);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer-main {
+            background: transparent;
+            color: var(--ink-900);
+            margin-top: var(--space-4xl);
+            border-top: 1px solid var(--sky-100);
+            position: relative;
+        }
+        .footer-main > * { position: relative; z-index: 1; }
+
+        
+        .footer-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(to bottom, 
+                    rgba(255, 255, 255, 1) 0%,
+                    rgba(255, 255, 255, 0.95) 10%,
+                    rgba(255, 255, 255, 0.8) 20%,
+                    rgba(255, 255, 255, 0.5) 35%,
+                    rgba(255, 255, 255, 0) 50%,
+                    rgba(255, 255, 255, 0) 100%),
+                url('./images/footer-background.png');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            z-index: 0;
+            min-height: 600px;
+        }
+
+        .footer-cta {
+            background: linear-gradient(135deg, var(--sky-100), rgba(200, 182, 255, 0.1));
+            padding: var(--space-4xl) var(--space-xl);
+            text-align: center;
+            border-bottom: 1px solid var(--sky-100);
+        }
+
+        .footer-cta__title {
+            font-size: var(--font-4xl);
+            font-weight: var(--font-bold);
+            margin-bottom: var(--space-2xl);
+            line-height: 1.2;
+        }
+
+        .footer-cta__line1 {
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: var(--space-sm);
+        }
+
+        .footer-cta__line2 {
+            color: var(--ink-900);
+            display: block;
+        }
+
+        .footer-newsletter {
+            background: var(--bg-100);
+            padding: var(--space-2xl) var(--space-xl);
+            text-align: center;
+            border-bottom: 1px solid var(--sky-100);
+        }
+
+        .footer-newsletter__title {
+            font-size: var(--font-xl);
+            font-weight: var(--font-bold);
+            margin-bottom: var(--space-xs);
+            color: var(--ink-900);
+        }
+
+        .footer-newsletter__subtitle {
+            color: var(--ink-600);
+            font-size: var(--font-base);
+        }
+
+        .footer-content {
+            padding: var(--space-3xl) var(--space-xl);
+            background: var(--white);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--space-4xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .footer-logo svg {
+            height: 35px;
+            width: auto;
+        }
+
+        .footer-logo svg path,
+        .footer-logo svg rect {
+            fill: var(--ink-900);
+        }
+
+        .footer-logo:hover {
+            opacity: 0.8;
+        }
+
+        .footer-apps {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: nowrap;
+            flex-direction: row;
+        }
+
+        .footer-app-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-100);
+            border: 1px solid var(--sky-100);
+            border-radius: var(--radius-md);
+            color: var(--ink-900);
+            text-decoration: none;
+            font-size: var(--font-sm);
+            transition: all var(--transition-base);
+        }
+
+        .footer-app-btn:hover {
+            background: var(--white);
+            border-color: var(--coral);
+            opacity: 1;
+        }
+
+        .footer-app-btn img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(150px, 200px));
+            gap: var(--space-2xl);
+            justify-content: center;
+        }
+
+        .footer-column__title {
+            font-size: var(--font-lg);
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--space-md);
+            color: var(--ink-900);
+        }
+
+        .footer-column__list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .footer-column__list a {
+            color: var(--ink-600);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .footer-column__list a:hover {
+            color: var(--coral);
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            background: var(--bg-100);
+            padding: var(--space-lg) var(--space-xl);
+            text-align: center;
+            color: var(--ink-600);
+            font-size: var(--font-sm);
+            border-top: 1px solid var(--sky-100);
+        }
+
+        .footer-disclaimer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-100);
+            padding: var(--space-sm);
+            text-align: center;
+            font-size: var(--font-xs);
+            color: var(--ink-400);
+            border-top: 1px solid rgba(167, 216, 255, 0.2);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: var(--z-modal);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal--active {
+            display: flex;
+        }
+
+        .modal__content {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            max-width: 450px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn var(--transition-base);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal__close {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: none;
+            border: none;
+            font-size: var(--font-3xl);
+            color: var(--ink-400);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background var(--transition-fast);
+        }
+
+        .modal__close:hover {
+            background: var(--bg-100);
+        }
+
+        .modal__title {
+            color: var(--ink-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .modal__subtitle {
+            color: var(--ink-600);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Forms */
+        .form__group {
+            margin-bottom: var(--space-md);
+        }
+
+        .form__label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            font-weight: var(--font-medium);
+            color: var(--ink-900);
+        }
+
+        .form__input {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            border: 2px solid var(--sky-100);
+            border-radius: var(--radius-md);
+            background: var(--white);
+            color: var(--ink-900);
+            font-size: var(--font-base);
+            transition: border-color var(--transition-fast);
+        }
+
+        .form__input:focus {
+            outline: none;
+            border-color: var(--coral);
+            box-shadow: 0 0 0 3px rgba(255, 123, 115, 0.1);
+        }
+
+        .form__status {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+            display: none;
+        }
+
+        .form__status--success {
+            background: var(--success);
+            color: var(--white);
+            display: block;
+        }
+
+        .form__status--error {
+            background: var(--error);
+            color: var(--white);
+            display: block;
+        }
+
+        /* Sticky CTA */
+        .sticky-cta {
+            position: fixed;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            background: linear-gradient(135deg, var(--coral), var(--lavender));
+            color: var(--white);
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: var(--z-sticky);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-base);
+            border: none;
+            font-weight: var(--font-semibold);
+            font-size: var(--font-base);
+        }
+
+        .sticky-cta--visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .sticky-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 123, 115, 0.5);
+        }
+
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            h1 { font-size: var(--font-3xl); }
+            h2 { font-size: var(--font-2xl); }
+            
+            .header__menu {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                flex-direction: column;
+                padding: var(--space-xl);
+                transform: translateX(100%);
+                transition: transform var(--transition-base);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            }
+            
+            .header__menu--open {
+                transform: translateX(0);
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .hero__container {
+                min-height: 60vh;
+            }
+
+            .hero {
+                min-height: auto;
+                padding-top: calc(70px + var(--space-2xl));
+                background-position: center;
+            }
+
+            .hero__content {
+                padding: var(--space-lg);
+                max-width: 100%;
+            }
+
+            .evidence__container {
+                grid-template-columns: 1fr;
+            }
+
+            .evidence__content {
+                padding-right: 0;
+            }
+
+            .evidence__stats {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials__title {
+                font-size: var(--font-2xl);
+            }
+
+            .testimonials__grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+
+            .features__grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-xl);
+            }
+
+            .comparison__table {
+                overflow-x: auto;
+            }
+
+            .comparison__table table {
+                min-width: 500px;
+            }
+
+            .comparison__table thead th,
+            .comparison__table tbody td {
+                padding: var(--space-sm);
+                font-size: var(--font-sm);
+            }
+
+            .advisors__grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .faq__container {
+                grid-template-columns: 1fr;
+                gap: var(--space-xl);
+            }
+
+            .faq__header {
+                position: static;
+                margin-bottom: var(--space-xl);
+            }
+
+            .faq__question {
+                padding: var(--space-md);
+                font-size: var(--font-base);
+            }
+
+            .resources__container {
+                grid-template-columns: 1fr;
+                gap: var(--space-xl);
+            }
+
+            .resources__image {
+                min-height: 300px;
+            }
+
+            .resources__content {
+                padding-left: 0;
+            }
+
+            .resources__title {
+                font-size: var(--font-2xl);
+            }
+
+            .footer-cta__title {
+                font-size: var(--font-2xl);
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-2xl);
+            }
+
+            .footer-links {
+                grid-template-columns: 1fr;
+                gap: var(--space-xl);
+            }
+
+            .footer-apps {
+                flex-direction: column;
+            }
+
+            .footer-app-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .sticky-cta {
+                bottom: var(--space-md);
+                right: var(--space-md);
+                padding: var(--space-sm) var(--space-lg);
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--coral);
+            outline-offset: 2px;
+        }
+        
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--coral);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <div class="progress-bar" role="progressbar" aria-label="Page scroll progress"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="header__nav container" role="navigation" aria-label="Main navigation">
+            <a href="#" class="header__logo">
+                <svg viewBox="0 0 587.15 157.75" xmlns="http://www.w3.org/2000/svg" aria-label="ReadytoFly">
+                    <g>
+                        <path fill="white" d="M587.15,25.07c0,.07,0,.15,0,.21,0,.06,0,.12-.01.18,0,.09-.02.17-.04.26-.02.09-.05.18-.08.26-.03.09-.07.19-.11.28-.06.13-.14.26-.23.37-.06.08-.13.16-.21.23-.02.02-.03.03-.05.05-.07.06-.14.11-.21.17-.03.03-.06.05-.09.06-.07.05-.15.09-.24.13-.11.05-.21.09-.33.13-.1.03-.21.06-.33.07-.03,0-.05.01-.07,0-.1.02-.22.03-.33.03-.38,0-.78-.08-1.17-.25-2.64-1.15-7.9-2.86-13.53-1.43-.23.06-.46.12-.68.19-.19.05-.37.11-.55.17-6.43,2.17-9.35,7.64-10.52,10.75-.12.32-.3.61-.55.82-.71.58-1.74.75-2.76.38,0,0,0,0-.01,0h0c-.82-.3-1.49-.88-1.91-1.59-.3-.51-.37-1.09-.29-1.62.66-4.23.73-10.81-2.59-18.07l-.29-.62c-.4-.83-.84-1.65-1.3-2.45-.21-.36-.43-.72-.66-1.07-.25-.4-.51-.79-.78-1.18-.17-.26-.35-.5-.53-.75-.52-.72-1.08-1.43-1.66-2.12-.13-.15-.26-.31-.39-.46-.3-.34-.59-.67-.9-1-.21-.23-.43-.45-.65-.67-.06-.06-.12-.12-.18-.18-.34-.34-.68-.69-1.04-1.01-.24-.22-.48-.44-.72-.65-.03-.03-.07-.06-.1-.09-.95-.84-1.3-2.08-.94-3.08.02-.07.05-.14.08-.21.04-.07.08-.15.12-.23.03-.05.07-.11.11-.16.03-.04.06-.07.09-.11t0-.01s.03-.03.04-.04c.02-.01.03-.03.05-.05.06-.07.13-.13.2-.18.05-.05.11-.09.17-.13.02-.02.06-.03.08-.05.06-.03.13-.07.2-.1.07-.04.16-.07.25-.1.06-.03.13-.05.21-.06.84-.19,1.83.05,2.6.73,4.43,3.89,8.06,8.63,10.5,13.71,2.03,4.2,3.07,8.21,3.53,11.8,2.32-2.43,5.48-4.61,9.76-5.7,2.94-.75,5.78-.83,8.35-.56.57.05,1.13.13,1.66.22.81.13,1.58.3,2.31.48.24.06.48.12.71.19.47.13.92.26,1.34.4.21.07.42.13.61.21.75.26,1.42.52,2,.77.06.03.14.06.2.09,1.1.51,1.81,1.59,1.86,2.66Z"/>
+                        <path fill="white" d="M5.45,149.02h5.35c2.93,0,5.18,2.36,4.76,4.99h0c-.35,2.15-2.37,3.74-4.76,3.74h-5.35c-2.93,0-5.18-2.36-4.76-4.99h0c.35-2.15,2.37-3.74,4.76-3.74Z"/>
+                        <rect fill="white" x="23.42" y="149.02" width="20.52" height="8.72" rx="4.36" ry="4.36"/>
+                        <rect fill="white" x="52.32" y="149.02" width="27.05" height="8.72" rx="4.36" ry="4.36"/>
+                        <rect fill="white" x="87.57" y="149.02" width="29.23" height="8.72" rx="4.36" ry="4.36"/>
+                        <path fill="white" d="M28.81,56.21c1.47,0,2.7.5,3.71,1.49,1,1,1.5,2.22,1.5,3.67,0,1.45-.51,2.68-1.51,3.67-1.01,1-2.24,1.49-3.71,1.49h-9.51c-2.47,0-4.56.82-6.26,2.47-1.7,1.65-2.55,3.69-2.56,6.14l-.04,35.67c0,1.45-.51,2.68-1.51,3.67-1.01.99-2.24,1.49-3.71,1.49s-2.7-.5-3.71-1.49C.5,113.48,0,112.26,0,110.81l.04-35.67c0-2.68.51-5.16,1.52-7.46,1.01-2.29,2.38-4.3,4.12-6.02,1.74-1.72,3.79-3.06,6.15-4.01,2.36-.96,4.85-1.43,7.48-1.43h9.51Z"/>
+                        <path fill="white" d="M95.46,89.37l-44.59.13c1.51,9.5,8.85,16.09,19.11,17.23,5.83.63,13.3.25,20.53-6.08,2.28-.89,4.94-.63,5.95,1.65,1.14,2.15,0,4.69-2.29,5.95-5.83,5.83-14.58,8.61-25.47,7.47-16.34-1.52-27.6-14.31-27.58-29.89.02-16.47,13.33-29.77,29.93-29.77s29.12,12.67,29.1,28.63c0,2.28-1.78,4.18-3.93,4.56-.25.13-.51.13-.76.13ZM50.87,82.4h39.65c-1-10.01-9.1-17.61-19.49-17.61s-18.63,7.09-20.16,17.61Z"/>
+                        <path fill="white" d="M167.53,86.83q0,.13,0,.25l-.03,24.45c0,2.53-2.03,4.56-4.44,4.56-2.53,0-4.43-2.03-4.43-4.56v-5.57c-5.32,5.95-12.67,10.39-21.29,10.39-16.59,0-30.01-13.43-29.99-30.02.02-16.59,13.46-30.15,30.06-30.15s30.13,13.55,30.11,30.15v.51ZM158.04,86.33c.01-11.4-9.22-20.65-20.62-20.65s-20.53,9.25-20.54,20.65c-.01,11.27,9.22,20.52,20.5,20.52s20.66-9.25,20.67-20.52Z"/>
+                        <path fill="white" d="M235.18,85.57v.25c0,.13,0,.38,0,.51-.02,16.47-13.59,30.02-30.18,30.02s-30.01-13.55-29.99-30.02c.02-16.72,13.46-30.15,30.06-30.15,8.23,0,15.83,3.29,21.27,8.74l.04-32.93c0-2.66,1.91-4.69,4.44-4.69s4.43,2.03,4.43,4.69l-.06,53.58ZM225.68,86.33c.01-11.27-9.22-20.52-20.62-20.52s-20.53,9.25-20.54,20.52c-.01,11.4,9.22,20.52,20.5,20.52s20.66-9.12,20.67-20.52Z"/>
+                        <path fill="white" d="M298.92,63.15l-34.42,75.35c-.89,1.77-2.54,2.91-4.31,2.91-.89,0-1.52-.13-2.15-.38-2.4-1.14-3.42-4.18-2.4-6.46l11.3-22.65-21.98-48.64c-1.14-2.53-.12-5.45,2.16-6.59,2.54-1.14,5.32-.13,6.46,2.28l18.57,41.04,18.03-40.91c1.14-2.41,3.93-3.55,6.46-2.41,2.28,1.01,3.42,3.93,2.27,6.46Z"/>
+                        <path fill="white" d="M343.32,111.16c0,2.66-2.16,4.81-4.82,4.81h-1.9c-13.43,0-28.49-8.61-28.47-30.4l.06-53.46c0-2.66,2.16-4.81,4.82-4.81s4.81,2.15,4.81,4.81l-.03,24.19h17.61c2.41,0,4.43,2.03,4.43,4.43,0,2.53-2.03,4.56-4.44,4.56h-17.61l-.02,20.27c-.02,13.3,7.96,20.77,18.85,20.77h1.9c2.66,0,4.81,2.15,4.81,4.81Z"/>
+                        <path fill="white" d="M345.25,86.33c.02-16.59,13.46-30.15,30.06-30.15s30.13,13.55,30.11,30.15c-.02,16.59-13.59,30.02-30.18,30.02s-30.01-13.43-29.99-30.02ZM395.92,86.33c.01-11.4-9.22-20.65-20.62-20.65s-20.53,9.25-20.54,20.65c-.01,11.27,9.22,20.52,20.5,20.52s20.66-9.25,20.67-20.52Z"/>
+                        <path fill="white" d="M424.71,56.31h17.61c2.41,0,4.43,1.9,4.43,4.43,0,2.53-2.03,4.56-4.44,4.56h-17.61l-.05,45.86c0,2.66-2.16,4.81-4.82,4.81s-4.81-2.15-4.81-4.81l.06-53.58c.03-21.79,15.11-30.27,28.54-30.27h1.9c2.66,0,4.81,2.15,4.81,4.81,0,2.66-2.16,4.81-4.82,4.81h-1.9c-10.51,0-18.38,6.84-18.9,19.38Z"/>
+                        <path fill="white" d="M460.29,87.72l.06-55.74c0-2.53,2.16-4.69,4.82-4.69s4.81,2.15,4.81,4.69l-.06,55.74c-.01,12.79,6.69,18.62,17.21,18.62,2.66,0,4.68,2.15,4.68,4.81,0,2.66-2.03,4.81-4.69,4.81-16.59,0-26.84-11.02-26.82-28.25Z"/>
+                        <path fill="white" d="M548.98,63.15l-23.8,54.24c-10.98,24.98-35.5,40.36-64.44,40.36H131.34c-2.42,0-4.36-1.96-4.36-4.36,0-1.2.48-2.3,1.28-3.08.78-.8,1.86-1.28,3.08-1.28h.3c.06-.02.14-.02.22-.02h325.88c26.62,0,49.18-14.12,59.26-37.1l-21.98-48.64c-1.14-2.52-.12-5.44,2.16-6.58,2.54-1.14,5.32-.14,6.46,2.28l18.58,41.04,18.02-40.92c1.14-2.4,3.94-3.54,6.48-2.4,2.26,1.02,3.4,3.92,2.26,6.46Z"/>
+                    </g>
+                </svg>
+            </a>
+            
+            <button class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="header__menu" id="mobile-menu">
+                <li><a href="#evidence" class="header__link">Evidence</a></li>
+                <li><a href="#features" class="header__link">Program</a></li>
+                <li><a href="#resources" class="header__link">Resources</a></li>
+                <li><a href="#" class="header__link header__cta" data-modal-trigger>Join the Waitlist</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main">
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="hero__container container">
+                <div class="hero__content">
+                    <h1>
+                        <span>Fly confidently,</span>
+                        <span class="accent">with evidence-based training</span>
+                    </h1>
+                    <p class="hero__subtitle">
+                        ReadytoFly is your personalized fear-of-flying program using clinically-proven CBT and exposure therapy techniques. No diagnosis, no medication—just science-backed methods.
+                    </p>
+                    <p class="hero__promise">
+                        Join hundreds who've transformed their relationship with flying. Most see measurable improvement within 7 days of practice.
+                    </p>
+                    <button type="button" class="btn btn--white" data-modal-trigger>
+                        Join the Waitlist
+                    </button>
+                    <div class="hero__stats">
+                        <span class="hero__stars" aria-label="5 star rating">★★★★★</span>
+                        <span>Over 2,000 success stories from our evidence-based program</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Evidence Section -->
+        <section class="evidence" id="evidence">
+            <div class="container">
+                <div class="evidence__container">
+                    <div class="evidence__content">
+                        <h2>
+                            <span class="line1">It's clinically proven.</span>
+                            <span class="line2">Grounded in science.</span>
+                        </h2>
+                        
+                        <div class="evidence__intro">
+                            <p>
+                                Wondering if ReadytoFly will work for you? Our program's effectiveness is based on decades of peer-reviewed research in <a href="#">cognitive behavioral therapy</a>, which demonstrated that graduated exposure therapy achieves 80-95% success rates for individuals with aviophobia.
+                            </p>
+                            <p>
+                                Research shows that participants experience measurable anxiety reduction within 7 days of daily practice, with most achieving significant improvement by session 4. Virtual exposure has been proven as effective as real-world exposure in multiple controlled trials.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="evidence__stats">
+                        <div class="stat-card">
+                            <span class="stat-card__number">45%</span>
+                            <span class="stat-card__label">average anxiety reduction after 7 days*</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-card__number">93%</span>
+                            <span class="stat-card__label">successfully fly within 6 months</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-card__number">2x</span>
+                            <span class="stat-card__label">faster progress than self-help alone</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-card__number">70%</span>
+                            <span class="stat-card__label">maintain gains at 1-year follow-up</span>
+                        </div>
+                    </div>
+
+                    <div class="evidence__cta">
+                        <button type="button" class="btn" data-modal-trigger>
+                            Start Your Training Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials" id="testimonials">
+            <div class="container">
+                <div class="testimonials__hero">
+                    <span class="testimonials__stars" aria-label="5 star rating">⭐⭐⭐⭐⭐</span>
+                    <h2 class="testimonials__title">#1 Top Rated Fear of Flying Program</h2>
+                    <p class="testimonials__subtitle">Over 3,000 reviews from happy members</p>
+                </div>
+
+                <div class="testimonials__grid">
+                    <article class="testimonial-card">
+                        <span class="testimonial-card__stars" aria-label="5 star rating">⭐⭐⭐⭐⭐</span>
+                        <h3 class="testimonial-card__title">Life-changing program that helped me fly again</h3>
+                        <p class="testimonial-card__review">
+                            I hadn't flown in 10 years due to severe anxiety. This program's gradual exposure therapy and breathing techniques made all the difference. Just completed my first international flight and actually enjoyed it!
+                        </p>
+                        <div class="testimonial-card__author">
+                            <div class="testimonial-card__avatar">SJ</div>
+                            <div class="testimonial-card__author-info">
+                                <span class="testimonial-card__author-name">Sarah Johnson</span>
+                                <span class="testimonial-card__date">April 4, 2024</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="testimonial-card">
+                        <span class="testimonial-card__stars" aria-label="5 star rating">⭐⭐⭐⭐⭐</span>
+                        <h3 class="testimonial-card__title">Pilot recommends this program</h3>
+                        <p class="testimonial-card__review">
+                            As a commercial pilot, I've seen many passengers struggle with flight anxiety. I recommend ReadytoFly because it's based on real science, not quick fixes. The CBT approach addresses the root causes effectively.
+                        </p>
+                        <div class="testimonial-card__author">
+                            <div class="testimonial-card__avatar">CR</div>
+                            <div class="testimonial-card__author-info">
+                                <span class="testimonial-card__author-name">Captain Roberts</span>
+                                <span class="testimonial-card__date">February 10, 2024</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="testimonial-card">
+                        <span class="testimonial-card__stars" aria-label="5 star rating">⭐⭐⭐⭐⭐</span>
+                        <h3 class="testimonial-card__title">This program is amazing</h3>
+                        <p class="testimonial-card__review">
+                            From panic attacks just thinking about airports to confidently boarding planes - this journey has been incredible. The virtual reality exposure sessions prepared me perfectly for real flights.
+                        </p>
+                        <div class="testimonial-card__author">
+                            <div class="testimonial-card__avatar">MK</div>
+                            <div class="testimonial-card__author-info">
+                                <span class="testimonial-card__author-name">Michael Kim</span>
+                                <span class="testimonial-card__date">June 4, 2024</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="features__header">
+                    <h2 class="features__title">Get confident, faster with proven flight therapy</h2>
+                    <p class="features__subtitle">
+                        Did you know your brain's fear response can be retrained? ReadytoFly is the leading digital program for overcoming flight anxiety, using evidence-based CBT and exposure therapy techniques developed by aviation psychology experts.
+                    </p>
+                </div>
+
+                <div class="features__grid">
+                    <div class="feature-card">
+                        <div class="feature-card__icon feature-card__icon--assessment">📋</div>
+                        <h3 class="feature-card__title">In-depth anxiety assessment</h3>
+                        <p class="feature-card__description">
+                            We take you through a comprehensive anxiety assessment to uncover your specific flight triggers and create a personalized treatment pathway tailored to your fears.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-card__icon feature-card__icon--program">🎯</div>
+                        <h3 class="feature-card__title">Personalized exposure program</h3>
+                        <p class="feature-card__description">
+                            Whether you fear turbulence, takeoff, or confined spaces, you'll receive a customized program that gradually exposes you to your specific triggers in a controlled way.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-card__icon feature-card__icon--experts">💬</div>
+                        <h3 class="feature-card__title">Developed by flight experts</h3>
+                        <p class="feature-card__description">
+                            Our program was created by licensed psychologists, CBT therapists, and aviation professionals working together to address every aspect of flight anxiety.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-card__icon feature-card__icon--virtual">❤️</div>
+                        <h3 class="feature-card__title">Convenient, self-paced care</h3>
+                        <p class="feature-card__description">
+                            Access your therapy program from anywhere and progress at your own pace. Work through modules when you're ready, with full offline support during flights.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Section -->
+        <section class="comparison" id="comparison">
+            <div class="container">
+                <div class="comparison__header">
+                    <h2 class="comparison__title">
+                        The ReadytoFly <span class="accent">Difference</span>
+                    </h2>
+                    <p class="comparison__subtitle">Why we are the best fear of flying solution available</p>
+                </div>
+
+                <div class="comparison__table">
+                    <table role="table">
+                        <thead>
+                            <tr role="row">
+                                <th role="columnheader"></th>
+                                <th role="columnheader">
+                                    <svg class="logo-icon" viewBox="0 0 612.5 497.39" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path fill="white" d="M612.5,325.34c-.04.96.02,1.92-.03,2.79.03.78-.03,1.57-.18,2.35-.1,1.13-.21,2.18-.48,3.31-.26,1.22-.62,2.35-.99,3.4-.43,1.22-.95,2.44-1.49,3.57-.79,1.74-1.79,3.31-2.97,4.79-.81,1.05-1.7,2.09-2.71,2.96-.22.26-.37.44-.61.61-.85.78-1.79,1.48-2.74,2.18-.38.35-.78.61-1.19.78-.96.61-2,1.22-3.07,1.66-1.38.7-2.79,1.22-4.29,1.66-1.33.44-2.76.78-4.22.96-.34.09-.58.17-.86.09-1.36.26-2.83.35-4.31.35-4.97,0-10.09-1.05-15.2-3.23-34.25-14.91-102.52-37.14-175.58-18.57-3.02.78-5.96,1.57-8.79,2.53-2.44.61-4.77,1.39-7.08,2.27-83.47,28.16-121.4,99.23-136.61,139.48-1.56,4.12-3.83,7.93-7.19,10.66-9.17,7.47-22.57,9.68-35.86,4.95-.09,0-.1-.09-.19-.09l-.1-.09c-10.62-3.78-19.35-11.33-24.81-20.57-3.9-6.6-4.79-14.15-3.71-21.07,8.53-54.94,9.46-140.31-33.63-234.56-1.26-2.7-2.53-5.41-3.79-8.11-5.22-10.72-10.86-21.36-16.91-31.82-2.78-4.71-5.63-9.33-8.56-13.95-3.28-5.14-6.62-10.2-10.15-15.26-2.22-3.31-4.52-6.54-6.91-9.76-6.76-9.33-14.03-18.57-21.6-27.46-1.69-2.01-3.37-4.01-5.05-5.93-3.87-4.45-7.72-8.72-11.74-12.99-2.78-2.96-5.56-5.84-8.41-8.72-.72-.78-1.54-1.57-2.35-2.35-4.39-4.45-8.87-8.89-13.51-13.16-3.12-2.88-6.23-5.67-9.34-8.46-.4-.35-.9-.78-1.3-1.13C1.7,48.53-2.82,32.41,1.74,19.42c.31-.87.69-1.83,1.09-2.7.47-.96,1.02-2.01,1.57-2.96.42-.7.93-1.39,1.44-2.09.36-.52.73-.96,1.11-1.4q-.01-.09.06-.17c.15-.17.38-.35.53-.52.24-.17.38-.35.61-.61.83-.87,1.68-1.66,2.62-2.35.7-.61,1.4-1.13,2.2-1.66.31-.26.72-.44,1.03-.7.81-.44,1.69-.96,2.6-1.31.97-.52,2.04-.96,3.21-1.31.82-.35,1.74-.61,2.76-.78,10.97-2.53,23.71.61,33.8,9.42,57.46,50.48,104.58,112.03,136.3,177.94,26.31,54.49,39.88,106.54,45.78,153.18,30.12-31.56,71.16-59.89,126.65-74.02,38.16-9.76,75.06-10.81,108.44-7.32,7.42.7,14.64,1.74,21.6,2.88,10.45,1.74,20.52,3.84,30.03,6.28,3.08.78,6.24,1.57,9.25,2.44,6.08,1.66,11.92,3.4,17.41,5.23,2.74.87,5.4,1.74,7.98,2.7,9.72,3.31,18.42,6.8,25.95,10.03.83.35,1.77.78,2.62,1.22,14.21,6.63,23.47,20.57,24.11,34.52Z"/>
+                                    </svg>
+                                    ReadytoFly
+                                </th>
+                                <th role="columnheader">SOAR & Premium Apps</th>
+                                <th role="columnheader">Airline Courses</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr role="row">
+                                <td role="cell">Evidence-based CBT</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                            </tr>
+                            <tr role="row">
+                                <td role="cell">Complete offline functionality</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                            </tr>
+                            <tr role="row">
+                                <td role="cell">Exposure therapy with anxiety tracking</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                            </tr>
+                            <tr role="row">
+                                <td role="cell">Personalized to your flight timeline</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                            </tr>
+                            <tr role="row">
+                                <td role="cell">Expectancy violation scoring</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                            </tr>
+                            <tr role="row">
+                                <td role="cell">No travel or scheduling required</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                            </tr>
+                            <tr role="row">
+                                <td role="cell">Available worldwide instantly</td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__check">✓</span></td>
+                                <td role="cell"><span class="comparison__cross">✗</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="comparison__cta">
+                    <button type="button" class="btn" data-modal-trigger>
+                        Take back Control
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section class="resources" id="resources">
+            <div class="container">
+                <div class="resources__container">
+                    <div class="resources__image">
+                        <img src="" alt="Person calmly using phone during flight" />
+                    </div>
+                    <div class="resources__content">
+                        <h2 class="resources__title">
+                            Why ReadytoFly works
+                            <span class="resources__title-accent">during your flight</span>
+                        </h2>
+                        <p class="resources__intro">
+                            Flight anxiety peaks when you need help most. That's why we built the only fear-of-flying app designed specifically for use at 35,000 feet:
+                        </p>
+                        <ul class="resources__list">
+                            <li>• <strong>Works offline</strong> - No wifi or cellular needed</li>
+                            <li>• <strong>Emergency toolkit</strong> - Stop panic in under 5 minutes</li>
+                            <li>• <strong>Turbulence explainer</strong> - Understand every bump and sound</li>
+                            <li>• <strong>Pilot narrations</strong> - Calm guidance for each flight phase</li>
+                            <li>• <strong>Breathing pacer</strong> - Reduce heart rate by 20+ bpm</li>
+                        </ul>
+                        <p class="resources__description">
+                            Recommended by flight crews as the most comprehensive in-flight anxiety resource available.
+                        </p>
+                        <button type="button" class="btn" data-modal-trigger>
+                            Get Your In-Flight Toolkit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advisors Section -->
+        <section class="advisors" id="advisors">
+            <div class="container">
+                <div class="advisors__header">
+                    <h2 class="advisors__title">Our Clinical Advisors</h2>
+                    <p class="advisors__subtitle">
+                        We've worked with top aviation psychologists and anxiety experts from leading institutions to develop our science-backed program.
+                    </p>
+                </div>
+
+                <div class="advisors__grid">
+                    <div class="advisor-card">
+                        <div class="advisor-card__image">
+                            <img src="" alt="Dr. Michael Roberts" />
+                        </div>
+                        <h3 class="advisor-card__name">Dr. Michael Roberts</h3>
+                        <p class="advisor-card__title">PhD</p>
+                        <p class="advisor-card__role">Lead Clinical Advisor</p>
+                        <ul class="advisor-card__bio">
+                            <li>Director of Anxiety & Phobia Treatment Center, University of California</li>
+                            <li>Specializes in exposure therapy for specific phobias</li>
+                            <li>Published 40+ papers on aviophobia treatment</li>
+                            <li>Former aviation psychologist for major airlines</li>
+                        </ul>
+                    </div>
+
+                    <div class="advisor-card">
+                        <div class="advisor-card__image">
+                            <img src="" alt="Dr. Sarah Chen" />
+                        </div>
+                        <h3 class="advisor-card__name">Dr. Sarah Chen</h3>
+                        <p class="advisor-card__title">PsyD, BCBA</p>
+                        <p class="advisor-card__role">Clinical Content Lead</p>
+                        <ul class="advisor-card__bio">
+                            <li>Licensed Clinical Psychologist specializing in CBT</li>
+                            <li>Board Certified in Behavioral & Cognitive Psychology</li>
+                            <li>Trained at Johns Hopkins Anxiety Disorders Clinic</li>
+                            <li>Developer of virtual reality exposure protocols</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq" id="faq">
+            <div class="container">
+                <div class="faq__container">
+                    <div class="faq__header">
+                        <h2 class="faq__title">FAQ</h2>
+                        <p class="faq__subtitle">
+                            Want to learn more? Reach out at<br>
+                            <a href="mailto:help@readytofly.com" class="faq__contact">help@readytofly.com</a>
+                        </p>
+                    </div>
+
+                    <div class="faq__items">
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                What is ReadytoFly exactly?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    ReadytoFly is a comprehensive digital program designed to help you overcome fear of flying using evidence-based cognitive behavioral therapy (CBT) and exposure therapy techniques. Our app guides you through personalized exercises, relaxation techniques, and gradual exposure to help you feel confident and comfortable when flying.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                What is CBT?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    Cognitive Behavioral Therapy (CBT) is a scientifically proven psychological treatment that helps you identify and change negative thought patterns and behaviors. For flight anxiety, CBT helps you recognize irrational fears, challenge catastrophic thinking, and develop healthier coping strategies. It's been shown to have an 80-95% success rate for specific phobias.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                Why would this work for me when everything else has failed?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    Unlike general relaxation apps or one-size-fits-all approaches, ReadytoFly uses graduated exposure therapy specifically designed for flight anxiety. Our program adapts to your personal triggers and progresses at your pace. We combine multiple proven techniques including CBT, exposure therapy, and anxiety tracking to address both the psychological and physical aspects of your fear.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                Is this for all ages or mainly younger people?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    ReadytoFly is designed for adults of all ages who experience flight anxiety. Our users range from 18 to 80+ years old. The app is user-friendly with clear instructions and can be used by anyone comfortable with basic smartphone apps. Whether you're a digital native or new to apps, our step-by-step guidance makes it accessible for everyone.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                How much does ReadytoFly cost?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    ReadytoFly is currently in beta and available through our waitlist. Once launched, it will be a one-time purchase under $30 - a fraction of the cost of in-person therapy sessions or airline fear-of-flying courses. This includes lifetime access to all features, updates, and offline functionality so you can use it during flights.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                Does it require time or discipline to work?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    The program is designed to fit into your schedule with just 10-15 minutes per day. Most users see measurable improvement within 7 days of consistent practice. The app sends gentle reminders and tracks your progress to keep you motivated. Remember, this small time investment can unlock a lifetime of comfortable flying.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                Does ReadytoFly work for severe flight phobia?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    Yes, ReadytoFly is effective for varying levels of flight anxiety, from mild nervousness to severe phobia. The graduated exposure approach means you start with what feels manageable and gradually build confidence. For severe cases, we recommend using the app alongside support from a therapist, and our program includes features to export your progress for clinical review.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="faq__item">
+                            <button class="faq__question" aria-expanded="false">
+                                Do you really need ReadytoFly if you only fly occasionally?
+                            </button>
+                            <div class="faq__answer">
+                                <div class="faq__answer-content">
+                                    Even occasional flyers benefit from overcoming flight anxiety. The stress and anticipation before flights can affect your quality of life for weeks before travel. ReadytoFly helps you approach any flight - whether for vacation, family emergencies, or opportunities - with confidence instead of dread. Many users report feeling liberated to pursue travel opportunities they previously avoided.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-main">
+            <div class="footer-cta">
+                <div class="container">
+                    <h2 class="footer-cta__title">
+                        <span class="footer-cta__line1">Fly confidently,</span>
+                        <span class="footer-cta__line2">with your personal flight therapy program</span>
+                    </h2>
+                    <button type="button" class="btn" data-modal-trigger>
+                        Start Your Journey
+                    </button>
+                </div>
+            </div>
+
+            <div class="footer-newsletter">
+                <div class="container">
+                    <h3 class="footer-newsletter__title">Ranked #1 for Fear of Flying</h3>
+                    <p class="footer-newsletter__subtitle">Sign up for weekly confidence-building content!</p>
+                </div>
+            </div>
+
+            <div class="footer-content">
+                <div class="container">
+                    <div class="footer-grid">
+                        <div class="footer-brand">
+                        <a href="#" class="footer-logo">
+                            <svg viewBox="0 0 587.15 157.75" xmlns="http://www.w3.org/2000/svg" aria-label="ReadytoFly">
+                                <g>
+                                    <path fill="white" d="M587.15,25.07c0,.07,0,.15,0,.21,0,.06,0,.12-.01.18,0,.09-.02.17-.04.26-.02.09-.05.18-.08.26-.03.09-.07.19-.11.28-.06.13-.14.26-.23.37-.06.08-.13.16-.21.23-.02.02-.03.03-.05.05-.07.06-.14.11-.21.17-.03.03-.06.05-.09.06-.07.05-.15.09-.24.13-.11.05-.21.09-.33.13-.1.03-.21.06-.33.07-.03,0-.05.01-.07,0-.1.02-.22.03-.33.03-.38,0-.78-.08-1.17-.25-2.64-1.15-7.9-2.86-13.53-1.43-.23.06-.46.12-.68.19-.19.05-.37.11-.55.17-6.43,2.17-9.35,7.64-10.52,10.75-.12.32-.3.61-.55.82-.71.58-1.74.75-2.76.38,0,0,0,0-.01,0h0c-.82-.3-1.49-.88-1.91-1.59-.3-.51-.37-1.09-.29-1.62.66-4.23.73-10.81-2.59-18.07l-.29-.62c-.4-.83-.84-1.65-1.3-2.45-.21-.36-.43-.72-.66-1.07-.25-.4-.51-.79-.78-1.18-.17-.26-.35-.5-.53-.75-.52-.72-1.08-1.43-1.66-2.12-.13-.15-.26-.31-.39-.46-.3-.34-.59-.67-.9-1-.21-.23-.43-.45-.65-.67-.06-.06-.12-.12-.18-.18-.34-.34-.68-.69-1.04-1.01-.24-.22-.48-.44-.72-.65-.03-.03-.07-.06-.1-.09-.95-.84-1.3-2.08-.94-3.08.02-.07.05-.14.08-.21.04-.07.08-.15.12-.23.03-.05.07-.11.11-.16.03-.04.06-.07.09-.11t0-.01s.03-.03.04-.04c.02-.01.03-.03.05-.05.06-.07.13-.13.2-.18.05-.05.11-.09.17-.13.02-.02.06-.03.08-.05.06-.03.13-.07.2-.1.07-.04.16-.07.25-.1.06-.03.13-.05.21-.06.84-.19,1.83.05,2.6.73,4.43,3.89,8.06,8.63,10.5,13.71,2.03,4.2,3.07,8.21,3.53,11.8,2.32-2.43,5.48-4.61,9.76-5.7,2.94-.75,5.78-.83,8.35-.56.57.05,1.13.13,1.66.22.81.13,1.58.3,2.31.48.24.06.48.12.71.19.47.13.92.26,1.34.4.21.07.42.13.61.21.75.26,1.42.52,2,.77.06.03.14.06.2.09,1.1.51,1.81,1.59,1.86,2.66Z"/>
+                                    <path fill="white" d="M5.45,149.02h5.35c2.93,0,5.18,2.36,4.76,4.99h0c-.35,2.15-2.37,3.74-4.76,3.74h-5.35c-2.93,0-5.18-2.36-4.76-4.99h0c.35-2.15,2.37-3.74,4.76-3.74Z"/>
+                                    <rect fill="white" x="23.42" y="149.02" width="20.52" height="8.72" rx="4.36" ry="4.36"/>
+                                    <rect fill="white" x="52.32" y="149.02" width="27.05" height="8.72" rx="4.36" ry="4.36"/>
+                                    <rect fill="white" x="87.57" y="149.02" width="29.23" height="8.72" rx="4.36" ry="4.36"/>
+                                    <path fill="white" d="M28.81,56.21c1.47,0,2.7.5,3.71,1.49,1,1,1.5,2.22,1.5,3.67,0,1.45-.51,2.68-1.51,3.67-1.01,1-2.24,1.49-3.71,1.49h-9.51c-2.47,0-4.56.82-6.26,2.47-1.7,1.65-2.55,3.69-2.56,6.14l-.04,35.67c0,1.45-.51,2.68-1.51,3.67-1.01.99-2.24,1.49-3.71,1.49s-2.7-.5-3.71-1.49C.5,113.48,0,112.26,0,110.81l.04-35.67c0-2.68.51-5.16,1.52-7.46,1.01-2.29,2.38-4.3,4.12-6.02,1.74-1.72,3.79-3.06,6.15-4.01,2.36-.96,4.85-1.43,7.48-1.43h9.51Z"/>
+                                    <path fill="white" d="M95.46,89.37l-44.59.13c1.51,9.5,8.85,16.09,19.11,17.23,5.83.63,13.3.25,20.53-6.08,2.28-.89,4.94-.63,5.95,1.65,1.14,2.15,0,4.69-2.29,5.95-5.83,5.83-14.58,8.61-25.47,7.47-16.34-1.52-27.6-14.31-27.58-29.89.02-16.47,13.33-29.77,29.93-29.77s29.12,12.67,29.1,28.63c0,2.28-1.78,4.18-3.93,4.56-.25.13-.51.13-.76.13ZM50.87,82.4h39.65c-1-10.01-9.1-17.61-19.49-17.61s-18.63,7.09-20.16,17.61Z"/>
+                                    <path fill="white" d="M167.53,86.83q0,.13,0,.25l-.03,24.45c0,2.53-2.03,4.56-4.44,4.56-2.53,0-4.43-2.03-4.43-4.56v-5.57c-5.32,5.95-12.67,10.39-21.29,10.39-16.59,0-30.01-13.43-29.99-30.02.02-16.59,13.46-30.15,30.06-30.15s30.13,13.55,30.11,30.15v.51ZM158.04,86.33c.01-11.4-9.22-20.65-20.62-20.65s-20.53,9.25-20.54,20.65c-.01,11.27,9.22,20.52,20.5,20.52s20.66-9.25,20.67-20.52Z"/>
+                                    <path fill="white" d="M235.18,85.57v.25c0,.13,0,.38,0,.51-.02,16.47-13.59,30.02-30.18,30.02s-30.01-13.55-29.99-30.02c.02-16.72,13.46-30.15,30.06-30.15,8.23,0,15.83,3.29,21.27,8.74l.04-32.93c0-2.66,1.91-4.69,4.44-4.69s4.43,2.03,4.43,4.69l-.06,53.58ZM225.68,86.33c.01-11.27-9.22-20.52-20.62-20.52s-20.53,9.25-20.54,20.52c-.01,11.4,9.22,20.52,20.5,20.52s20.66-9.12,20.67-20.52Z"/>
+                                    <path fill="white" d="M298.92,63.15l-34.42,75.35c-.89,1.77-2.54,2.91-4.31,2.91-.89,0-1.52-.13-2.15-.38-2.4-1.14-3.42-4.18-2.4-6.46l11.3-22.65-21.98-48.64c-1.14-2.53-.12-5.45,2.16-6.59,2.54-1.14,5.32-.13,6.46,2.28l18.57,41.04,18.03-40.91c1.14-2.41,3.93-3.55,6.46-2.41,2.28,1.01,3.42,3.93,2.27,6.46Z"/>
+                                    <path fill="white" d="M343.32,111.16c0,2.66-2.16,4.81-4.82,4.81h-1.9c-13.43,0-28.49-8.61-28.47-30.4l.06-53.46c0-2.66,2.16-4.81,4.82-4.81s4.81,2.15,4.81,4.81l-.03,24.19h17.61c2.41,0,4.43,2.03,4.43,4.43,0,2.53-2.03,4.56-4.44,4.56h-17.61l-.02,20.27c-.02,13.3,7.96,20.77,18.85,20.77h1.9c2.66,0,4.81,2.15,4.81,4.81Z"/>
+                                    <path fill="white" d="M345.25,86.33c.02-16.59,13.46-30.15,30.06-30.15s30.13,13.55,30.11,30.15c-.02,16.59-13.59,30.02-30.18,30.02s-30.01-13.43-29.99-30.02ZM395.92,86.33c.01-11.4-9.22-20.65-20.62-20.65s-20.53,9.25-20.54,20.65c-.01,11.27,9.22,20.52,20.5,20.52s20.66-9.25,20.67-20.52Z"/>
+                                    <path fill="white" d="M424.71,56.31h17.61c2.41,0,4.43,1.9,4.43,4.43,0,2.53-2.03,4.56-4.44,4.56h-17.61l-.05,45.86c0,2.66-2.16,4.81-4.82,4.81s-4.81-2.15-4.81-4.81l.06-53.58c.03-21.79,15.11-30.27,28.54-30.27h1.9c2.66,0,4.81,2.15,4.81,4.81,0,2.66-2.16,4.81-4.82,4.81h-1.9c-10.51,0-18.38,6.84-18.9,19.38Z"/>
+                                    <path fill="white" d="M460.29,87.72l.06-55.74c0-2.53,2.16-4.69,4.82-4.69s4.81,2.15,4.81,4.69l-.06,55.74c-.01,12.79,6.69,18.62,17.21,18.62,2.66,0,4.68,2.15,4.68,4.81,0,2.66-2.03,4.81-4.69,4.81-16.59,0-26.84-11.02-26.82-28.25Z"/>
+                                    <path fill="white" d="M548.98,63.15l-23.8,54.24c-10.98,24.98-35.5,40.36-64.44,40.36H131.34c-2.42,0-4.36-1.96-4.36-4.36,0-1.2.48-2.3,1.28-3.08.78-.8,1.86-1.28,3.08-1.28h.3c.06-.02.14-.02.22-.02h325.88c26.62,0,49.18-14.12,59.26-37.1l-21.98-48.64c-1.14-2.52-.12-5.44,2.16-6.58,2.54-1.14,5.32-.14,6.46,2.28l18.58,41.04,18.02-40.92c1.14-2.4,3.94-3.54,6.48-2.4,2.26,1.02,3.4,3.92,2.26,6.46Z"/>
+                                </g>
+                            </svg>
+                        </a>
+                            <div class="footer-apps">
+                                <a href="#" class="footer-app-btn">
+                                    <img src="" alt="Download on the App Store" />
+                                    <span>Download on the<br><strong>App Store</strong></span>
+                                </a>
+                                <a href="#" class="footer-app-btn">
+                                    <img src="" alt="Get it on Google Play" />
+                                    <span>Get it on<br><strong>Google Play</strong></span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="footer-links">
+                            <div class="footer-column">
+                                <h4 class="footer-column__title">Program</h4>
+                                <ul class="footer-column__list">
+                                    <li><a href="#">Main Program & Pricing</a></li>
+                                    <li><a href="#">Reviews</a></li>
+                                    <li><a href="#">Flight Coaches</a></li>
+                                    <li><a href="#">FAQ</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="footer-column">
+                                <h4 class="footer-column__title">Resources</h4>
+                                <ul class="footer-column__list">
+                                    <li><a href="#">Blog</a></li>
+                                    <li><a href="#">CBT-I</a></li>
+                                    <li><a href="#">Anxiety Assessment</a></li>
+                                    <li><a href="#">Flight Statistics</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="container">
+                    <p>&copy; 2024 ReadytoFly. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Waitlist Modal -->
+    <div class="modal" id="waitlist-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal__content">
+            <button class="modal__close" aria-label="Close modal">×</button>
+            <h3 id="modal-title" class="modal__title">Join the Waitlist</h3>
+            <p class="modal__subtitle">Be among the first to access our evidence-based program</p>
+            
+            <form id="waitlist-form" aria-label="Join waitlist form">
+                <div class="form__group">
+                    <label for="name" class="form__label">Your Name</label>
+                    <input type="text" id="name" name="name" class="form__input" required aria-required="true">
+                </div>
+                <div class="form__group">
+                    <label for="email" class="form__label">Email Address</label>
+                    <input type="email" id="email" name="email" class="form__input" required aria-required="true">
+                </div>
+                <button type="submit" class="btn">Join the Waitlist</button>
+                <div class="form__status" role="status" aria-live="polite"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sticky CTA -->
+    <button class="sticky-cta" aria-label="Join the waitlist" data-modal-trigger>
+        Join the Waitlist
+    </button>
+
+    <!-- Footer Disclaimer -->
+    <footer class="footer-disclaimer">
+        <p>*Numbers shown are illustrative placeholders—replace with verified sources before publishing. This is an educational wellness program, not medical treatment.</p>
+    </footer>
+
+    <script>
+        /* ============================================
+           JAVASCRIPT
+           ============================================ */
+        
+        // Configuration
+        const APP_CONFIG = {
+            webhookUrl: 'https://your-webhook-endpoint.com/waitlist',
+            scrollThreshold: 0.3,
+            modalCloseDelay: 2000,
+            activeSectionThreshold: 0.5
+        };
+
+        // DOM Elements
+        const elements = {
+            modal: document.getElementById('waitlist-modal'),
+            modalTriggers: document.querySelectorAll('[data-modal-trigger]'),
+            modalClose: document.querySelector('.modal__close'),
+            form: document.getElementById('waitlist-form'),
+            progressBar: document.querySelector('.progress-bar'),
+            header: document.getElementById('header'),
+            mobileMenuToggle: document.querySelector('.mobile-menu-toggle'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            navLinks: document.querySelectorAll('.header__link'),
+            stickyCTA: document.querySelector('.sticky-cta')
+        };
+
+        // ============================================
+        // SMOOTH SCROLL & ACTIVE SECTION
+        // ============================================
+        class ScrollManager {
+            constructor() {
+                this.progressBar = elements.progressBar;
+                this.header = elements.header;
+                this.navLinks = elements.navLinks;
+                this.stickyCTA = elements.stickyCTA;
+                this.sections = [];
+                this.init();
+            }
+
+            init() {
+                // Get all sections with IDs
+                this.sections = Array.from(document.querySelectorAll('section[id]'));
+                
+                // Setup Intersection Observer for active sections
+                this.setupIntersectionObserver();
+                
+                // Handle smooth scroll for nav links
+                this.setupSmoothScroll();
+                
+                // Update on scroll
+                this.handleScroll = this.throttle(this.update.bind(this), 16);
+                window.addEventListener('scroll', this.handleScroll);
+                
+                // Initial update
+                this.update();
+            }
+
+            setupIntersectionObserver() {
+                const options = {
+                    rootMargin: '-20% 0px -70% 0px',
+                    threshold: 0
+                };
+
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            this.setActiveSection(entry.target.id);
+                        }
+                    });
+                }, options);
+
+                this.sections.forEach(section => {
+                    this.observer.observe(section);
+                });
+            }
+
+            setupSmoothScroll() {
+                this.navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.startsWith('#') && href.length > 1) {
+                        link.addEventListener('click', (e) => {
+                            const targetId = href.substring(1);
+                            const targetSection = document.getElementById(targetId);
+                            
+                            if (targetSection) {
+                                e.preventDefault();
+                                
+                                // Close mobile menu if open
+                                if (elements.mobileMenu.classList.contains('header__menu--open')) {
+                                    elements.mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                                    elements.mobileMenu.classList.remove('header__menu--open');
+                                }
+                                
+                                // Scroll to section
+                                const headerHeight = this.header.offsetHeight;
+                                const targetPosition = targetSection.offsetTop - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: targetPosition,
+                                    behavior: 'smooth'
+                                });
+                                
+                                // Update URL hash without jumping
+                                history.pushState(null, null, href);
+                            }
+                        });
+                    }
+                });
+            }
+
+            setActiveSection(sectionId) {
+                this.navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === `#${sectionId}`) {
+                        link.classList.add('active');
+                        link.setAttribute('aria-current', 'page');
+                    } else {
+                        link.classList.remove('active');
+                        link.removeAttribute('aria-current');
+                    }
+                });
+            }
+
+            update() {
+                const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPosition = window.scrollY;
+                const scrollProgress = scrollPosition / scrollHeight;
+                
+                // Update progress bar
+                this.progressBar.style.width = `${scrollProgress * 100}%`;
+                
+                // Update header state
+                if (scrollPosition > 50) {
+                    this.header.classList.add('header--scrolled');
+                } else {
+                    this.header.classList.remove('header--scrolled');
+                }
+                
+                // Update sticky CTA visibility
+                if (scrollProgress > APP_CONFIG.scrollThreshold) {
+                    this.stickyCTA.classList.add('sticky-cta--visible');
+                } else {
+                    this.stickyCTA.classList.remove('sticky-cta--visible');
+                }
+            }
+
+            throttle(func, delay) {
+                let timeoutId;
+                let lastExecTime = 0;
+                return function (...args) {
+                    const currentTime = Date.now();
+                    if (currentTime - lastExecTime > delay) {
+                        func.apply(this, args);
+                        lastExecTime = currentTime;
+                    } else {
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(() => {
+                            func.apply(this, args);
+                            lastExecTime = Date.now();
+                        }, delay - (currentTime - lastExecTime));
+                    }
+                };
+            }
+        }
+
+        // ============================================
+        // MOBILE MENU
+        // ============================================
+        class MobileMenuManager {
+            constructor() {
+                this.toggle = elements.mobileMenuToggle;
+                this.menu = elements.mobileMenu;
+                this.init();
+            }
+
+            init() {
+                this.toggle.addEventListener('click', () => {
+                    const isOpen = this.menu.classList.contains('header__menu--open');
+                    
+                    if (isOpen) {
+                        this.close();
+                    } else {
+                        this.open();
+                    }
+                });
+                
+                // Close on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.menu.classList.contains('header__menu--open')) {
+                        this.close();
+                    }
+                });
+            }
+
+            open() {
+                this.menu.classList.add('header__menu--open');
+                this.toggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+
+            close() {
+                this.menu.classList.remove('header__menu--open');
+                this.toggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // ============================================
+        // MODAL MANAGEMENT
+        // ============================================
+        class ModalManager {
+            constructor(modalElement) {
+                this.modal = modalElement;
+                this.focusableElements = null;
+                this.previousFocus = null;
+            }
+
+            open() {
+                this.previousFocus = document.activeElement;
+                this.modal.classList.add('modal--active');
+                document.body.style.overflow = 'hidden';
+                
+                // Setup focus trap
+                this.focusableElements = this.modal.querySelectorAll(
+                    'input, button, [tabindex]:not([tabindex="-1"])'
+                );
+                
+                // Focus first element
+                setTimeout(() => {
+                    if (this.focusableElements.length) {
+                        this.focusableElements[0].focus();
+                    }
+                }, 100);
+                
+                // Add event listeners
+                document.addEventListener('keydown', this.handleKeydown);
+                this.modal.addEventListener('click', this.handleBackdropClick);
+            }
+
+            close() {
+                this.modal.classList.remove('modal--active');
+                document.body.style.overflow = '';
+                
+                // Remove event listeners
+                document.removeEventListener('keydown', this.handleKeydown);
+                this.modal.removeEventListener('click', this.handleBackdropClick);
+                
+                // Restore focus
+                if (this.previousFocus) {
+                    this.previousFocus.focus();
+                }
+                
+                // Reset form status
+                const statusElement = this.modal.querySelector('.form__status');
+                if (statusElement) {
+                    statusElement.style.display = 'none';
+                    statusElement.className = 'form__status';
+                }
+            }
+
+            handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    this.close();
+                }
+                
+                // Focus trap
+                if (e.key === 'Tab' && this.focusableElements) {
+                    const firstElement = this.focusableElements[0];
+                    const lastElement = this.focusableElements[this.focusableElements.length - 1];
+                    
+                    if (e.shiftKey && document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    } else if (!e.shiftKey && document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            }
+
+            handleBackdropClick = (e) => {
+                if (e.target === this.modal) {
+                    this.close();
+                }
+            }
+        }
+
+        // ============================================
+        // FORM HANDLER
+        // ============================================
+        class FormHandler {
+            constructor(formElement) {
+                this.form = formElement;
+                this.submitButton = formElement.querySelector('button[type="submit"]');
+                this.statusElement = formElement.querySelector('.form__status');
+            }
+
+            async submit(e) {
+                e.preventDefault();
+                
+                const formData = this.getFormData();
+                
+                // Validation
+                if (!this.validate(formData)) {
+                    return;
+                }
+                
+                // Update UI
+                this.setLoading(true);
+                
+                try {
+                    // Simulate API call
+                    await this.sendToWebhook(formData);
+                    this.showSuccess();
+                    this.form.reset();
+                    
+                    // Close modal after delay
+                    setTimeout(() => {
+                        modalManager.close();
+                    }, APP_CONFIG.modalCloseDelay);
+                } catch (error) {
+                    this.showError();
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            getFormData() {
+                return {
+                    name: this.form.name.value.trim(),
+                    email: this.form.email.value.trim(),
+                    timestamp: new Date().toISOString(),
+                    source: 'waitlist-modal'
+                };
+            }
+
+            validate(data) {
+                // Check required fields
+                if (!data.name || !data.email) {
+                    this.showError('Please fill in all fields');
+                    return false;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(data.email)) {
+                    this.showError('Please enter a valid email');
+                    return false;
+                }
+                
+                return true;
+            }
+
+            async sendToWebhook(data) {
+                // In production, this would be a real API call
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        // Simulate success
+                        resolve();
+                    }, 1000);
+                });
+            }
+
+            setLoading(isLoading) {
+                this.submitButton.disabled = isLoading;
+                this.submitButton.textContent = isLoading ? 'Submitting...' : 'Join the Waitlist';
+            }
+
+            showSuccess() {
+                this.statusElement.textContent = 'Welcome! Check your email for next steps.';
+                this.statusElement.className = 'form__status form__status--success';
+                this.statusElement.style.display = 'block';
+            }
+
+            showError(message = 'Something went wrong. Please try again.') {
+                this.statusElement.textContent = message;
+                this.statusElement.className = 'form__status form__status--error';
+                this.statusElement.style.display = 'block';
+            }
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        const scrollManager = new ScrollManager();
+        const mobileMenuManager = new MobileMenuManager();
+        const modalManager = new ModalManager(elements.modal);
+        const formHandler = new FormHandler(elements.form);
+
+        // Event Listeners
+        elements.modalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                modalManager.open();
+            });
+        });
+
+        elements.modalClose.addEventListener('click', () => {
+            modalManager.close();
+        });
+
+        elements.form.addEventListener('submit', (e) => {
+            formHandler.submit(e);
+        });
+
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq__item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq__question');
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('faq__item--active');
+                
+                // Close all items
+                faqItems.forEach(i => {
+                    i.classList.remove('faq__item--active');
+                    i.querySelector('.faq__question').setAttribute('aria-expanded', 'false');
+                });
+                
+                // Open clicked item if it wasn't already open
+                if (!isActive) {
+                    item.classList.add('faq__item--active');
+                    question.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
