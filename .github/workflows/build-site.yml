@@ -1,0 +1,32 @@
+name: Build HTML from components
+
+on:
+  push:
+    paths:
+      - 'src/sections/*.html'
+      - 'src/components/*.html'
+      - 'build.py'
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Run build script
+      run: python build.py
+    
+    - name: Commit and push if changed
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git add index.html how-it-works.html reviews.html program.html faq.html
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-rebuild HTML files from components" && git push)
