@@ -403,7 +403,7 @@ a:hover {
 }
 
 .hero__content h1 .accent {
-    color: var(--coral);  /* Solid coral text */
+    color: var(--white);  /* Solid coral text */
 }
 
 .hero__subtitle {
