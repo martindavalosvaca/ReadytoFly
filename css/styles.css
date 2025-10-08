@@ -403,7 +403,16 @@ a:hover {
 }
 
 .hero__content h1 .accent {
-    color: var(--white);  /* Solid coral text */
+    color: var(--white); 
+}
+
+/* Make ALL accent text in the hero white */
+.hero .accent {
+    color: var(--white);
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    background-clip: initial;
 }
 
 .hero__subtitle {
