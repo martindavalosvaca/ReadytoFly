@@ -1,14 +1,13 @@
 /* ============================================
    ReadytoFly MVP - Complete Stylesheet
+   Solid Coral Version (#FF7B73)
    ============================================
    
-   Color System Applied:
-   • ReadytoFly palette tokens throughout main content
-   • CSS variables for colors (--peach, --coral, --lavender, --sky)
-   • Gradient system for buttons and CTAs
-   • Surface and border tokens for cards/panels
-   • Text color hierarchy (--ink for headings, --muted for body)
-   • Header & Footer sections preserved as-is
+   Updates in this version:
+   • All gradient buttons changed to solid coral (#FF7B73)
+   • All gradient text effects changed to solid coral
+   • Hover states use lighter coral (#FF8C82)
+   • Consistent solid color approach throughout
    ============================================ */
 
 /* ============================================
@@ -18,16 +17,13 @@
     /* ReadytoFly Brand Colors */
     --peach: #FFD6B0;       /* warm glow, subtle highlights */
     --coral: #FF7B73;       /* primary action & emphasis */
+    --coral-hover: #FF8C82; /* lighter coral for hover states */
     --lavender: #C8B6FF;    /* calm accent, secondary action */
     --sky: #A7D8FF;         /* brand blue, progress, links */
     --sky-100: #E6F3FF;     /* soft backgrounds / chips */
     --white: #FFFFFF;       /* base surfaces */
     --ink: #1F2A44;         /* headings / strong text */
     --muted: #6B7280;       /* body text */
-    
-    /* CTA gradients (body only; do NOT change header/footer CTAs) */
-    --cta-grad: linear-gradient(90deg, var(--coral), var(--lavender));
-    --cta-grad-hover: linear-gradient(90deg, #FF8C82, #BFA6FF);
     
     /* Surfaces & lines */
     --surface: #FFFFFF;
@@ -164,11 +160,11 @@ a:hover {
    COMPONENTS
    ============================================ */
 
-/* Buttons - Body Content Only */
+/* Buttons - Solid Coral */
 .btn {
     display: inline-block;
     padding: var(--space-md) var(--space-2xl);
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral instead of gradient */
     color: var(--white);
     font-weight: var(--font-semibold);
     border: none;
@@ -179,7 +175,7 @@ a:hover {
 }
 
 .btn:hover {
-    background: var(--cta-grad-hover);
+    background: var(--coral-hover);  /* Lighter coral on hover */
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 123, 115, 0.4);
     opacity: 1;
@@ -197,12 +193,12 @@ a:hover {
     transform: none;
 }
 
-/* Skip Link */
+/* Skip Link - Solid Coral */
 .skip-link {
     position: absolute;
     top: -40px;
     left: 0;
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral */
     color: var(--white);
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-sm);
@@ -214,14 +210,14 @@ a:hover {
     left: var(--space-md);
 }
 
-/* Progress Bar */
+/* Progress Bar - Solid Coral */
 .progress-bar {
     position: fixed;
     top: 0;
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral */
     z-index: var(--z-modal);
     transition: width var(--transition-base);
 }
@@ -296,7 +292,7 @@ a:hover {
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, var(--coral), var(--lavender));
+    background: var(--coral);  /* Solid coral underline */
 }
 
 .header__cta {
@@ -407,10 +403,7 @@ a:hover {
 }
 
 .hero__content h1 .accent {
-    background: linear-gradient(135deg, var(--peach), var(--coral));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--coral);  /* Solid coral text */
 }
 
 .hero__subtitle {
@@ -438,7 +431,7 @@ a:hover {
 }
 
 /* ============================================
-   MAIN CONTENT SECTIONS - Updated Colors
+   MAIN CONTENT SECTIONS
    ============================================ */
 
 /* Evidence Section */
@@ -469,10 +462,7 @@ a:hover {
 
 .evidence h2 .line1 {
     display: block;
-    background: var(--cta-grad);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--coral);  /* Solid coral text */
     margin-bottom: var(--space-sm);
 }
 
@@ -525,10 +515,7 @@ a:hover {
 .stat-card__number {
     font-size: var(--font-4xl);
     font-weight: var(--font-bold);
-    background: var(--cta-grad);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--coral);  /* Solid coral text */
     margin-bottom: var(--space-sm);
     display: block;
 }
@@ -636,7 +623,7 @@ a:hover {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral background */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -733,12 +720,12 @@ a:hover {
 }
 
 .feature-card__icon--experts {
-    background: linear-gradient(135deg, var(--peach), var(--coral));
+    background: var(--coral);  /* Solid coral */
     color: var(--white);
 }
 
 .feature-card__icon--virtual {
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral */
     color: var(--white);
 }
 
@@ -774,10 +761,7 @@ a:hover {
 }
 
 .comparison__title .accent {
-    background: var(--cta-grad);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--coral);  /* Solid coral text */
     font-style: italic;
 }
 
@@ -816,7 +800,7 @@ a:hover {
 }
 
 .comparison__table thead th:nth-child(2) {
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral header */
     color: var(--white);
     position: relative;
 }
@@ -949,10 +933,7 @@ a:hover {
 
 .advisor-card__title {
     font-size: var(--font-base);
-    background: var(--cta-grad);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--coral);  /* Solid coral text */
     margin-bottom: var(--space-xs);
     font-weight: var(--font-semibold);
 }
@@ -1145,10 +1126,7 @@ a:hover {
 
 .resources__title-accent {
     display: block;
-    background: var(--cta-grad);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--coral);  /* Solid coral text */
     margin-top: var(--space-sm);
 }
 
@@ -1546,12 +1524,12 @@ a:hover {
     display: block;
 }
 
-/* Sticky CTA */
+/* Sticky CTA - Solid Coral */
 .sticky-cta {
     position: fixed;
     bottom: var(--space-xl);
     right: var(--space-xl);
-    background: var(--cta-grad);
+    background: var(--coral);  /* Solid coral */
     color: var(--white);
     padding: var(--space-md) var(--space-xl);
     border-radius: var(--radius-full);
@@ -1572,7 +1550,7 @@ a:hover {
 }
 
 .sticky-cta:hover {
-    background: var(--cta-grad-hover);
+    background: var(--coral-hover);  /* Lighter coral on hover */
     transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(255, 123, 115, 0.5);
 }
