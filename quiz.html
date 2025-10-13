@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReadytoFly - Fear of Flying Assessment</title>
+    
+    <style>
+        /* ============================================
+           DESIGN TOKENS
+           ============================================ */
+        :root {
+            /* Colors */
+            --coral: #FF7B73;
+            --coral-hover: #FF8C82;
+            --lavender: #C8B6FF;
+            --sky: #A7D8FF;
+            --sky-100: #E6F3FF;
+            --peach: #FFD6B0;
+            
+            /* Neutrals */
+            --ink: #1F2A44;
+            --muted: #6B7280;
+            --surface: #FFFFFF;
+            --surface-alt: #F9FBFF;
+            --border: #E6EEF7;
+            
+            /* Effects */
+            --shadow: 0 8px 30px rgba(31,42,68,.08);
+            --ring: var(--sky);
+            
+            /* Spacing */
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Radius */
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-base: 300ms ease;
+        }
+
+        /* ============================================
+           BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--ink);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .quiz-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quiz-header {
+            text-align: center;
+            padding: var(--space-xl) 0;
+            margin-bottom: var(--space-xl);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+            margin: 0 auto;
+        }
+
+        .logo svg {
+            width: 100%;
+            height: auto;
+        }
+        
+        .logo svg path {
+            fill: var(--ink);
+        }
+
+        /* ============================================
+           PROGRESS BAR
+           ============================================ */
+        .progress-section {
+            margin-bottom: var(--space-2xl);
+        }
+
+        .section-label {
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-sm);
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #E8EEF7;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--sky);
+            border-radius: var(--radius-md);
+            transition: width var(--transition-base);
+        }
+
+        /* ============================================
+           QUESTION CONTAINER
+           ============================================ */
+        .question-container {
+            flex: 1;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: fadeIn var(--transition-base);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: var(--space-xl);
+            line-height: 1.3;
+            color: var(--ink);
+            font-weight: bold;
+        }
+
+        .step-prefix {
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            margin-bottom: var(--space-lg);
+            color: var(--muted);
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           OPTIONS
+           ============================================ */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .option-button {
+            background: var(--white);
+            border: 2px solid var(--border);
+            color: var(--ink);
+            padding: var(--space-lg) var(--space-xl);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: left;
+            font-weight: 500;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-button:hover {
+            background: #D9EDFF;
+            border-color: var(--sky);
+            transform: translateX(4px);
+        }
+
+        .option-button.selected {
+            background: var(--sky-100);
+            border-color: var(--sky);
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .checkbox-option {
+            padding-left: 4rem;
+            position: relative;
+        }
+
+        .checkbox-option::before {
+            content: '';
+            position: absolute;
+            left: var(--space-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            background: var(--white);
+            transition: all var(--transition-fast);
+        }
+
+        .checkbox-option.selected::before {
+            background: var(--sky);
+            border-color: var(--sky);
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        /* ============================================
+           INPUTS
+           ============================================ */
+        .input-field {
+            background: var(--white);
+            border: 2px solid var(--border);
+            color: var(--ink);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: var(--space-md);
+            transition: all var(--transition-fast);
+            min-height: 48px;
+        }
+
+        .input-field:focus {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+            border-color: var(--sky);
+        }
+
+        /* Slider styling */
+        .slider-container {
+            margin: var(--space-xl) 0;
+        }
+
+        .slider-track {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: var(--radius-md);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .slider-fill {
+            height: 100%;
+            background: var(--sky);
+            border-radius: var(--radius-md);
+            transition: width var(--transition-fast);
+        }
+
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: var(--white);
+            border: 3px solid var(--sky);
+            border-radius: 50%;
+            cursor: grab;
+            transition: transform var(--transition-fast);
+        }
+
+        .slider-thumb:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-sm);
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--sky);
+            margin-bottom: var(--space-md);
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .navigation-buttons {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: auto;
+            padding-top: var(--space-xl);
+        }
+
+        .btn {
+            padding: var(--space-md) var(--space-2xl);
+            border-radius: var(--radius-lg);
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            letter-spacing: 0.5px;
+            min-height: 48px;
+        }
+
+        .btn-primary {
+            background: var(--coral);
+            color: var(--white);
+            flex: 1;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--coral-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--sky);
+            color: var(--ink);
+            padding: var(--space-md) var(--space-xl);
+        }
+
+        .btn-secondary:hover {
+            background: var(--sky-100);
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--muted);
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: var(--space-xl);
+            transition: color var(--transition-fast);
+            font-weight: 500;
+            background: none;
+            border: none;
+            min-height: 44px;
+        }
+
+        .back-button:hover {
+            color: var(--sky);
+        }
+
+        .back-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ============================================
+           INFO SCREENS
+           ============================================ */
+        .info-screen {
+            text-align: center;
+            padding: var(--space-xl) var(--space-lg);
+        }
+
+        .info-card {
+            background: var(--surface-alt);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            margin: var(--space-xl) 0;
+            border: 1px solid var(--border);
+        }
+
+        .stat-number {
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: bold;
+            color: var(--sky);
+            margin-bottom: var(--space-sm);
+        }
+
+        .pilot-quote {
+            background: linear-gradient(135deg, rgba(167, 216, 255, 0.1), rgba(167, 216, 255, 0.2));
+            border-left: 4px solid var(--sky);
+            padding: var(--space-xl);
+            margin: var(--space-xl) 0;
+            text-align: left;
+            font-style: italic;
+            border-radius: var(--radius-md);
+        }
+
+        .pilot-attribution {
+            text-align: right;
+            margin-top: var(--space-md);
+            font-size: 0.875rem;
+            color: var(--muted);
+            font-style: normal;
+        }
+
+        .testimonial-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin: var(--space-xl) 0;
+            box-shadow: var(--shadow);
+        }
+
+        .stars {
+            color: #FCD34D;
+            font-size: 1.25rem;
+            margin-bottom: var(--space-md);
+        }
+
+        /* ============================================
+           LOADING
+           ============================================ */
+        .loading-screen {
+            text-align: center;
+            padding: var(--space-2xl) var(--space-xl);
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--sky);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: var(--space-2xl) auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.25rem;
+            margin: var(--space-xl) 0;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           GAUGE
+           ============================================ */
+        .gauge-container {
+            position: relative;
+            width: 280px;
+            height: 200px;
+            margin: var(--space-2xl) auto;
+        }
+
+        .gauge-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .gauge-background {
+            fill: none;
+            stroke: #E8EEF7;
+            stroke-width: 20;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 20;
+            stroke-linecap: round;
+            transition: all 0.8s ease;
+        }
+
+        .gauge-fill.low { stroke: var(--coral); }
+        .gauge-fill.medium { stroke: var(--peach); }
+        .gauge-fill.high { stroke: var(--lavender); }
+        .gauge-fill.excellent { stroke: var(--sky); }
+
+        .score-display {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: bold;
+            color: var(--ink);
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        .hidden {
+            display: none !important;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* ============================================
+           MOBILE RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .quiz-container { 
+                padding: var(--space-md); 
+                min-height: 100dvh;
+            }
+            
+            .quiz-header {
+                padding: var(--space-md) 0;
+                margin-bottom: var(--space-md);
+            }
+            
+            .logo { width: 150px; }
+            
+            .progress-section {
+                margin-bottom: var(--space-lg);
+            }
+            
+            .section-label {
+                font-size: 0.75rem;
+            }
+            
+            .question-container { 
+                padding: var(--space-lg);
+            }
+            
+            .gauge-container { 
+                width: 220px; 
+                height: 160px;
+            }
+            
+            .options-container {
+                gap: var(--space-sm);
+            }
+            
+            .option-button {
+                padding: var(--space-md) var(--space-lg);
+                font-size: 0.875rem;
+            }
+            
+            .checkbox-option {
+                padding-left: 3rem;
+            }
+            
+            .checkbox-option::before {
+                width: 20px;
+                height: 20px;
+                left: var(--space-md);
+            }
+            
+            .navigation-buttons {
+                padding-top: var(--space-md);
+            }
+            
+            .btn {
+                padding: var(--space-sm) var(--space-lg);
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <div class="logo">
+                <svg viewBox="0 0 587.15 157.75" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M587.15,25.07c0,.07,0,.15,0,.21,0,.06,0,.12-.01.18,0,.09-.02.17-.04.26-.02.09-.05.18-.08.26-.03.09-.07.19-.11.28-.06.13-.14.26-.23.37-.06.08-.13.16-.21.23-.02.02-.03.03-.05.05-.07.06-.14.11-.21.17-.03.03-.06.05-.09.06-.07.05-.15.09-.24.13-.11.05-.21.09-.33.13-.1.03-.21.06-.33.07-.03,0-.05.01-.07,0-.1.02-.22.03-.33.03-.38,0-.78-.08-1.17-.25-2.64-1.15-7.9-2.86-13.53-1.43-.23.06-.46.12-.68.19-.19.05-.37.11-.55.17-6.43,2.17-9.35,7.64-10.52,10.75-.12.32-.3.61-.55.82-.71.58-1.74.75-2.76.38,0,0,0,0-.01,0h0c-.82-.3-1.49-.88-1.91-1.59-.3-.51-.37-1.09-.29-1.62.66-4.23.73-10.81-2.59-18.07l-.29-.62c-.4-.83-.84-1.65-1.3-2.45-.21-.36-.43-.72-.66-1.07-.25-.4-.51-.79-.78-1.18-.17-.26-.35-.5-.53-.75-.52-.72-1.08-1.43-1.66-2.12-.13-.15-.26-.31-.39-.46-.3-.34-.59-.67-.9-1-.21-.23-.43-.45-.65-.67-.06-.06-.12-.12-.18-.18-.34-.34-.68-.69-1.04-1.01-.24-.22-.48-.44-.72-.65-.03-.03-.07-.06-.1-.09-.95-.84-1.3-2.08-.94-3.08.02-.07.05-.14.08-.21.04-.07.08-.15.12-.23.03-.05.07-.11.11-.16.03-.04.06-.07.09-.11t0-.01s.03-.03.04-.04c.02-.01.03-.03.05-.05.06-.07.13-.13.2-.18.05-.05.11-.09.17-.13.02-.02.06-.03.08-.05.06-.03.13-.07.2-.1.07-.04.16-.07.25-.1.06-.03.13-.05.21-.06.84-.19,1.83.05,2.6.73,4.43,3.89,8.06,8.63,10.5,13.71,2.03,4.2,3.07,8.21,3.53,11.8,2.32-2.43,5.48-4.61,9.76-5.7,2.94-.75,5.78-.83,8.35-.56.57.05,1.13.13,1.66.22.81.13,1.58.3,2.31.48.24.06.48.12.71.19.47.13.92.26,1.34.4.21.07.42.13.61.21.75.26,1.42.52,2,.77.06.03.14.06.2.09,1.1.51,1.81,1.59,1.86,2.66Z"/>
+                    <path d="M28.81,56.21c1.47,0,2.7.5,3.71,1.49,1,1,1.5,2.22,1.5,3.67,0,1.45-.51,2.68-1.51,3.67-1.01,1-2.24,1.49-3.71,1.49h-9.51c-2.47,0-4.56.82-6.26,2.47-1.7,1.65-2.55,3.69-2.56,6.14l-.04,35.67c0,1.45-.51,2.68-1.51,3.67-1.01.99-2.24,1.49-3.71,1.49s-2.7-.5-3.71-1.49C.5,113.48,0,112.26,0,110.81l.04-35.67c0-2.68.51-5.16,1.52-7.46,1.01-2.29,2.38-4.3,4.12-6.02,1.74-1.72,3.79-3.06,6.15-4.01,2.36-.96,4.85-1.43,7.48-1.43h9.51Z"/>
+                    <path d="M95.46,89.37l-44.59.13c1.51,9.5,8.85,16.09,19.11,17.23,5.83.63,13.3.25,20.53-6.08,2.28-.89,4.94-.63,5.95,1.65,1.14,2.15,0,4.69-2.29,5.95-5.83,5.83-14.58,8.61-25.47,7.47-16.34-1.52-27.6-14.31-27.58-29.89.02-16.47,13.33-29.77,29.93-29.77s29.12,12.67,29.1,28.63c0,2.28-1.78,4.18-3.93,4.56-.25.13-.51.13-.76.13ZM50.87,82.4h39.65c-1-10.01-9.1-17.61-19.49-17.61s-18.63,7.09-20.16,17.61Z"/>
+                    <path d="M167.53,86.83q0,.13,0,.25l-.03,24.45c0,2.53-2.03,4.56-4.44,4.56-2.53,0-4.43-2.03-4.43-4.56v-5.57c-5.32,5.95-12.67,10.39-21.29,10.39-16.59,0-30.01-13.43-29.99-30.02.02-16.59,13.46-30.15,30.06-30.15s30.13,13.55,30.11,30.15v.51ZM158.04,86.33c.01-11.4-9.22-20.65-20.62-20.65s-20.53,9.25-20.54,20.65c-.01,11.27,9.22,20.52,20.5,20.52s20.66-9.25,20.67-20.52Z"/>
+                    <path d="M235.18,85.57v.25c0,.13,0,.38,0,.51-.02,16.47-13.59,30.02-30.18,30.02s-30.01-13.55-29.99-30.02c.02-16.72,13.46-30.15,30.06-30.15,8.23,0,15.83,3.29,21.27,8.74l.04-32.93c0-2.66,1.91-4.69,4.44-4.69s4.43,2.03,4.43,4.69l-.06,53.58ZM225.68,86.33c.01-11.27-9.22-20.52-20.62-20.52s-20.53,9.25-20.54,20.52c-.01,11.4,9.22,20.52,20.5,20.52s20.66-9.12,20.67-20.52Z"/>
+                    <path d="M298.92,63.15l-34.42,75.35c-.89,1.77-2.54,2.91-4.31,2.91-.89,0-1.52-.13-2.15-.38-2.4-1.14-3.42-4.18-2.4-6.46l11.3-22.65-21.98-48.64c-1.14-2.53-.12-5.45,2.16-6.59,2.54-1.14,5.32-.13,6.46,2.28l18.57,41.04,18.03-40.91c1.14-2.41,3.93-3.55,6.46-2.41,2.28,1.01,3.42,3.93,2.27,6.46Z"/>
+                    <path d="M343.32,111.16c0,2.66-2.16,4.81-4.82,4.81h-1.9c-13.43,0-28.49-8.61-28.47-30.4l.06-53.46c0-2.66,2.16-4.81,4.82-4.81s4.81,2.15,4.81,4.81l-.03,24.19h17.61c2.41,0,4.43,2.03,4.43,4.43,0,2.53-2.03,4.56-4.44,4.56h-17.61l-.02,20.27c-.02,13.3,7.96,20.77,18.85,20.77h1.9c2.66,0,4.81,2.15,4.81,4.81Z"/>
+                    <path d="M345.25,86.33c.02-16.59,13.46-30.15,30.06-30.15s30.13,13.55,30.11,30.15c-.02,16.59-13.59,30.02-30.18,30.02s-30.01-13.43-29.99-30.02ZM395.92,86.33c.01-11.4-9.22-20.65-20.62-20.65s-20.53,9.25-20.54,20.65c-.01,11.27,9.22,20.52,20.5,20.52s20.66-9.25,20.67-20.52Z"/>
+                    <path d="M424.71,56.31h17.61c2.41,0,4.43,1.9,4.43,4.43,0,2.53-2.03,4.56-4.44,4.56h-17.61l-.05,45.86c0,2.66-2.16,4.81-4.82,4.81s-4.81-2.15-4.81-4.81l.06-53.58c.03-21.79,15.11-30.27,28.54-30.27h1.9c2.66,0,4.81,2.15,4.81,4.81,0,2.66-2.16,4.81-4.82,4.81h-1.9c-10.51,0-18.38,6.84-18.9,19.38Z"/>
+                    <path d="M460.29,87.72l.06-55.74c0-2.53,2.16-4.69,4.82-4.69s4.81,2.15,4.81,4.69l-.06,55.74c-.01,12.79,6.69,18.62,17.21,18.62,2.66,0,4.68,2.15,4.68,4.81,0,2.66-2.03,4.81-4.69,4.81-16.59,0-26.84-11.02-26.82-28.25Z"/>
+                    <path d="M548.98,63.15l-23.8,54.24c-10.98,24.98-35.5,40.36-64.44,40.36H131.34c-2.42,0-4.36-1.96-4.36-4.36,0-1.2.48-2.3,1.28-3.08.78-.8,1.86-1.28,3.08-1.28h.3c.06-.02.14-.02.22-.02h325.88c26.62,0,49.18-14.12,59.26-37.1l-21.98-48.64c-1.14-2.52-.12-5.44,2.16-6.58,2.54-1.14,5.32-.14,6.46,2.28l18.58,41.04,18.02-40.92c1.14-2.4,3.94-3.54,6.48-2.4,2.26,1.02,3.4,3.92,2.26,6.46Z"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="section-label" id="sectionLabel">Getting Started</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <button class="back-button hidden" id="backButton" aria-label="Go back">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            Back
+        </button>
+
+        <div role="region" aria-live="polite" class="sr-only" id="announcer"></div>
+
+        <div class="question-container" id="questionContainer"></div>
+
+        <div class="navigation-buttons" id="navigationButtons">
+            <button class="btn btn-primary" id="continueBtn">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIG
+        // ============================================
+        const CONFIG = {
+            WEBHOOK_URL: 'https://alertahora.app.n8n.cloud/webhook/readytofly-quiz',
+            IMPROVEMENT: {
+                day7:  { MIN: 12, TARGET: 20, CAP: 85 },
+                day30: { MIN: 30, TARGET: 45, CAP: 90 }
+            }
+        };
+
+        // ============================================
+        // STATE
+        // ============================================
+        const state = {
+            currentIndex: 0,
+            answers: {},
+            score: 0,
+            startTime: new Date(),
+            sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            stepTimestamps: [],
+            stepDurations: [],
+            backtracks: 0,
+            submitted: false
+        };
+
+        // ============================================
+        // DOM HOOKS
+        // ============================================
+        const dom = {
+            container: document.getElementById('questionContainer'),
+            backBtn: document.getElementById('backButton'),
+            continueBtn: document.getElementById('continueBtn'),
+            progressFill: document.getElementById('progressFill'),
+            sectionLabel: document.getElementById('sectionLabel'),
+            navigationButtons: document.getElementById('navigationButtons'),
+            announcer: document.getElementById('announcer')
+        };
+
+        // ============================================
+        // HELPERS
+        // ============================================
+        function announce(message) {
+            dom.announcer.textContent = message;
+        }
+
+        function toggleClass(element, className, condition) {
+            if (condition) {
+                element.classList.add(className);
+            } else {
+                element.classList.remove(className);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // RENDERERS
+        // ============================================
+        function renderIntroScreen(step, stepNumber) {
+            const html = `
+                <div class="info-screen">
+                    <h2 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem;">
+                        Fly Anywhere,<br>Without Fear
+                    </h2>
+                    <p style="font-size: 1.25rem; color: var(--muted); margin-bottom: 2.5rem;">
+                        This assessment will create your personalized account and show you exactly how to transform your relationship with flying in just 14 days
+                    </p>
+                    
+                    <div class="info-card" style="background: var(--sky-100); border-color: var(--sky);">
+                        <div class="stat-number">12,847</div>
+                        <p style="font-size: 1.125rem;">People now flying confidently</p>
+                        <p style="margin-top: 1rem; color: var(--muted);">Average confidence increase: <strong style="color: var(--sky);">73%</strong> in 14 days</p>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin: 2.5rem 0; padding: 1.5rem; background: var(--surface-alt); border-radius: var(--radius-lg);">
+                        <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; color: var(--sky);">
+                            <path fill="currentColor" d="M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z"/>
+                        </svg>
+                        <div style="text-align: left;">
+                            <p style="font-weight: 600; color: var(--ink);">Evidence-based ACT + CBT</p>
+                            <p style="font-size: 0.875rem; color: var(--muted);">No medication needed</p>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.875rem; color: var(--muted); margin-bottom: 2rem;">
+                        Takes just 10 minutes to complete
+                    </p>
+                </div>
+            `;
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = false;
+            dom.continueBtn.textContent = 'Start Your Journey';
+        }
+
+        function renderAccountCreation(step, stepNumber) {
+            const html = `
+                <h2><span class="step-prefix">Step ${stepNumber}:</span> Create Your Account</h2>
+                <h3>We'll save your progress and create your personalized plan</h3>
+                <div style="margin-top: 30px;">
+                    <input type="text" class="input-field" id="firstName" placeholder="First Name *" 
+                           value="${state.answers.firstName || ''}"
+                           onchange="updateField('firstName', this.value)" required>
+                    <input type="text" class="input-field" id="lastName" placeholder="Last Name *" 
+                           value="${state.answers.lastName || ''}"
+                           onchange="updateField('lastName', this.value)" required>
+                    <input type="email" class="input-field" id="email" placeholder="Email (will be your login) *" 
+                           value="${state.answers.email || ''}"
+                           onchange="updateField('email', this.value)" required>
+                    <input type="password" class="input-field" id="password" placeholder="Create Password *" 
+                           value="${state.answers.password || ''}"
+                           onchange="updateField('password', this.value)" required>
+                    <input type="tel" class="input-field" id="phone" placeholder="Phone (optional - for SMS reminders)" 
+                           value="${state.answers.phone || ''}"
+                           onchange="updateField('phone', this.value)">
+                    <label style="display: flex; gap: 0.5rem; align-items: start; margin-top: 1rem; font-size: 0.875rem;">
+                        <input type="checkbox" id="consent" 
+                               ${state.answers.consent ? 'checked' : ''}
+                               onchange="updateField('consent', this.checked)" 
+                               style="margin-top: 0.25rem;">
+                        <span>I agree to the privacy policy and terms of service</span>
+                    </label>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-top: 1rem;">
+                    Your information is secure and never shared. We use it only to personalize your program.
+                </p>
+            `;
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.textContent = 'Create Account & Continue';
+            checkAccountForm();
+        }
+
+        function renderSingleChoice(step, stepNumber) {
+            let html = `<h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>`;
+            html += `<h3>${escapeHtml(step.question)}</h3>`;
+            if (step.subtext) html += `<p style="font-size: 0.875rem; color: var(--muted); margin-bottom: 1.5rem;">${escapeHtml(step.subtext)}</p>`;
+            
+            html += '<div class="options-container">';
+            step.options.forEach((option, index) => {
+                const isSelected = state.answers[step.id] === option;
+                html += `
+                    <button class="option-button ${isSelected ? 'selected' : ''}" 
+                            data-step-id="${step.id}"
+                            data-option-index="${index}"
+                            aria-pressed="${isSelected}">
+                        ${escapeHtml(option)}
+                    </button>
+                `;
+            });
+            html += '</div>';
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.add('hidden');
+            
+            // Attach event listeners
+            const buttons = dom.container.querySelectorAll('.option-button');
+            buttons.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    selectSingleOption(step.id, step.options[index]);
+                });
+            });
+        }
+
+        function renderMultipleChoice(step, stepNumber) {
+            let html = `<h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>`;
+            html += `<h3>${escapeHtml(step.question)}</h3>`;
+            if (step.subtext) html += `<p style="font-size: 0.875rem; color: var(--muted); margin-bottom: 1.5rem;">${escapeHtml(step.subtext)}</p>`;
+            
+            html += '<div class="options-container">';
+            const selected = state.answers[step.id] || [];
+            
+            step.options.forEach((option, index) => {
+                const isSelected = selected.includes(option);
+                html += `
+                    <button class="option-button checkbox-option ${isSelected ? 'selected' : ''}" 
+                            data-step-id="${step.id}"
+                            data-option-index="${index}"
+                            aria-pressed="${isSelected}">
+                        ${escapeHtml(option)}
+                    </button>
+                `;
+            });
+            html += '</div>';
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = !state.answers[step.id] || state.answers[step.id].length === 0;
+            dom.continueBtn.textContent = 'Continue';
+            
+            // Attach event listeners
+            const buttons = dom.container.querySelectorAll('.option-button');
+            buttons.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    selectMultipleOption(step.id, step.options[index]);
+                });
+            });
+        }
+
+        function renderScale(step, stepNumber) {
+            const currentValue = state.answers[step.id] || Math.floor((step.max - step.min) / 2) + step.min;
+            
+            let html = `<h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>`;
+            html += `<h3>${escapeHtml(step.question)}</h3>`;
+            if (step.subtext) html += `<p style="font-size: 0.875rem; color: var(--muted); margin-bottom: 1.5rem;">${escapeHtml(step.subtext)}</p>`;
+            
+            html += '<div class="slider-container">';
+            html += `<div class="slider-value" id="sliderValue">${currentValue}</div>`;
+            html += '<div class="slider-track" id="sliderTrack">';
+            html += `<div class="slider-fill" id="sliderFill" style="width: ${((currentValue - step.min) / (step.max - step.min)) * 100}%"></div>`;
+            html += `<div class="slider-thumb" id="sliderThumb" style="left: ${((currentValue - step.min) / (step.max - step.min)) * 100}%"></div>`;
+            html += '</div>';
+            html += '<div class="slider-labels">';
+            html += `<span>${escapeHtml(step.minLabel)}</span>`;
+            html += `<span>${escapeHtml(step.maxLabel)}</span>`;
+            html += '</div>';
+            html += '</div>';
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = false;
+            dom.continueBtn.textContent = 'Continue';
+            
+            initSlider(step.id, step.min, step.max, currentValue);
+        }
+
+        function renderInfoScreen(step, stepNumber) {
+            const html = `
+                <div class="info-screen">
+                    <h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>
+                    ${step.content}
+                </div>
+            `;
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = false;
+            dom.continueBtn.textContent = 'Continue';
+        }
+
+        function renderCurrentScore(step, stepNumber) {
+            const score = calculateScore();
+            state.score = score;
+            
+            let scoreClass = score > 60 ? 'excellent' : score > 40 ? 'high' : score > 20 ? 'medium' : 'low';
+            let scoreLabel = score > 60 ? 'Ready to Fly' : score > 40 ? 'Managing Anxiety' : score > 20 ? 'Building Confidence' : 'Severe Anxiety';
+            
+            const html = `
+                <div class="info-screen">
+                    <h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 280 200" aria-label="Flight confidence gauge showing ${score}%">
+                            <path d="M 40 160 A 100 100 0 0 1 240 160" class="gauge-background"/>
+                            <path d="M 40 160 A 100 100 0 0 1 240 160" 
+                                  class="gauge-fill ${scoreClass}" 
+                                  stroke-dasharray="314" 
+                                  stroke-dashoffset="${314 - (314 * score / 100)}"
+                                  style="transition: stroke-dashoffset 1s ease;"/>
+                        </svg>
+                        <div class="score-display">
+                            <div class="score-number">${score}%</div>
+                            <div class="score-label">${scoreLabel}</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 30px;">Based on your responses, flying feels nearly impossible right now.<br>
+                    <strong style="color: var(--sky);">But that's about to change...</strong></p>
+                </div>
+            `;
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = false;
+            dom.continueBtn.textContent = 'Continue';
+        }
+
+        function renderProjectedScore(step, stepNumber) {
+            const currentScore = state.score || calculateScore();
+            const projected7 = Math.min(CONFIG.IMPROVEMENT.day7.CAP, 
+                                       Math.max(currentScore + CONFIG.IMPROVEMENT.day7.MIN, 
+                                               currentScore + CONFIG.IMPROVEMENT.day7.TARGET));
+            const improvement = projected7 - currentScore;
+            
+            const currentClass = currentScore > 60 ? 'excellent' : currentScore > 40 ? 'high' : currentScore > 20 ? 'medium' : 'low';
+            const scoreLabel = projected7 < 40 ? 'Building Confidence' : projected7 < 60 ? 'Managing Anxiety' : 'Ready to Fly';
+            
+            const html = `
+                <div class="info-screen">
+                    <h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>
+                    <h3>Where you'll be after 7 days of practice:</h3>
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 280 200" aria-label="Projected confidence improvement">
+                            <defs>
+                                <linearGradient id="improvement-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:var(--sky);stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:var(--lavender);stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 40 160 A 100 100 0 0 1 240 160" class="gauge-background"/>
+                            <path d="M 40 160 A 100 100 0 0 1 240 160"
+                                  class="gauge-fill ${currentClass}"
+                                  stroke-dasharray="${314 * currentScore / 100} ${314 * (100 - currentScore) / 100}"
+                                  stroke-dashoffset="0"/>
+                            <path d="M 40 160 A 100 100 0 0 1 240 160"
+                                  id="improvement-path"
+                                  style="fill:none;stroke:url(#improvement-gradient);stroke-width:20;stroke-linecap:round;"
+                                  stroke-dasharray="0 314"
+                                  stroke-dashoffset="${-(314 * currentScore / 100)}"/>
+                        </svg>
+                        <div class="score-display">
+                            <div class="score-number" id="projected-score">${currentScore}%</div>
+                            <div class="score-label">${scoreLabel}</div>
+                        </div>
+                    </div>
+                    <p style="margin-top:30px;">Based on 12,847 success stories like yours</p>
+                </div>
+            `;
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = false;
+            dom.continueBtn.textContent = 'Continue';
+            
+            setTimeout(() => animateProjection(currentScore, projected7, improvement), 100);
+        }
+
+        function renderLoadingScreen(step, stepNumber) {
+            const html = `
+                <div class="loading-screen">
+                    <h2><span class="step-prefix">Step ${stepNumber}:</span> ${escapeHtml(step.title)}</h2>
+                    <div class="loading-text">Analyzing your flight anxiety profile...</div>
+                    <div class="spinner" role="status" aria-label="Loading"></div>
+                    <div style="color: var(--muted);">
+                        Creating your personalized flight freedom plan<br>
+                        based on 12,847 success stories...
+                    </div>
+                </div>
+            `;
+            
+            dom.container.innerHTML = html;
+            dom.continueBtn.disabled = true;
+            dom.navigationButtons.classList.add('hidden');
+            
+            setTimeout(() => navigate(1), 3000);
+        }
+
+        function renderSummary(step, stepNumber) {
+            const currentScore = state.score || calculateScore();
+            const projected30 = Math.min(CONFIG.IMPROVEMENT.day30.CAP, 
+                                        Math.max(currentScore + CONFIG.IMPROVEMENT.day30.MIN, 
+                                                currentScore + CONFIG.IMPROVEMENT.day30.TARGET));
+            
+            const html = `
+                <div class="info-screen">
+                    <h2><span class="step-prefix">Step ${stepNumber}:</span> Your Transformation Path</h2>
+                    <h3>Where you'll be after 30 days:</h3>
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 280 200">
+                            <path d="M 40 160 A 100 100 0 0 1 240 160" class="gauge-background"/>
+                            <path d="M 40 160 A 100 100 0 0 1 240 160"
+                                  class="gauge-fill high"
+                                  stroke-dasharray="${314 * projected30 / 100} ${314 * (100 - projected30) / 100}"
+                                  stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="score-display">
+                            <div class="score-number">${projected30}%</div>
+                            <div class="score-label">Ready to Fly</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 18px;">
+                        Based on your profile and 12,847 similar success stories
+                    </p>
+                </div>
+            `;
+            
+            dom.container.innerHTML = html;
+            dom.navigationButtons.classList.remove('hidden');
+            dom.continueBtn.disabled = false;
+            dom.continueBtn.textContent = 'Continue';
+        }
+
+        // ============================================
+        // STEPS ARRAY
+        // ============================================
+        const STEPS = [
+            { id: 'intro', title: 'Welcome', section: 'Onboarding & Account Setup', render: renderIntroScreen },
+            { id: 'accountCreation', title: 'Create Your Account', section: 'Onboarding & Account Setup', render: renderAccountCreation },
+            
+            { id: 'urgency', title: 'When do you need to fly?', section: 'Onboarding & Account Setup', render: renderSingleChoice,
+              question: 'When do you need to fly next?',
+              options: ['I have a flight booked within 2 weeks', 'I have a flight booked within 1-3 months', 
+                       'I want to book but too anxious', 'No immediate plans but want to be ready',
+                       'I have important event requiring flight soon', 'I fly for work regularly']
+            },
+            
+            { id: 'primaryGoal', title: 'Primary Flight Goal', section: 'Onboarding & Account Setup', render: renderSingleChoice,
+              question: 'What\'s the ONE thing you most want flying confidently to give you?',
+              options: ['Visit family/friends without dread', 'Take dream vacation', 
+                       'Career advancement without limits', 'Stop missing life events',
+                       'Feel free and unrestricted', 'Reduce constant worry/planning around flying']
+            },
+            
+            { id: 'impact', title: 'Life Impact', section: 'Onboarding & Account Setup', render: renderSingleChoice,
+              question: 'What has your fear cost you most?',
+              options: ['Important family moments', 'Career opportunities', 
+                       'Dream experiences', 'Relationships with distant loved ones',
+                       'Thousands in alternative travel', 'All of the above']
+            },
+            
+            { id: 'severity', title: 'Current Severity', section: 'Fear Profile', render: renderSingleChoice,
+              question: 'Rate your current fear of flying:',
+              options: ['Mild - nervous but can fly', 'Moderate - fly with significant distress',
+                       'Severe - avoid flying whenever possible', 'Extreme - haven\'t flown in years']
+            },
+            
+            { id: 'lastFlight', title: 'Last Flight', section: 'Fear Profile', render: renderSingleChoice,
+              question: 'When did you last fly?',
+              options: ['Within past year', '1-2 years ago', '3-5 years ago', '5-10 years ago',
+                       '10+ years ago', 'Never flown due to fear']
+            },
+            
+            { id: 'triggers', title: 'Specific Triggers', section: 'Fear Profile', render: renderMultipleChoice,
+              question: 'What triggers your anxiety most? (select all)',
+              subtext: 'Select all that apply',
+              options: ['Takeoff', 'Turbulence', 'Strange noises', 'Feeling trapped',
+                       'Landing', 'Heights/windows', 'Lack of control', 'Fear of crashing', 'Fear of panic attack']
+            },
+            
+            { id: 'symptoms', title: 'Physical Symptoms', section: 'Fear Profile', render: renderMultipleChoice,
+              question: 'Which symptoms do you experience?',
+              subtext: 'Select all that apply',
+              options: ['Racing heart', 'Sweating', 'Shortness of breath', 'Nausea', 
+                       'Shaking', 'Dizziness', 'Chest tightness', 'Panic attacks']
+            },
+            
+            { id: 'beliefAboutAnxiety', title: 'Belief About Anxiety', section: 'Fear Profile', render: renderSingleChoice,
+              question: 'Which statement feels most true to you?',
+              options: ['Anxiety is dangerous and means something is wrong', 
+                       'Anxiety is uncomfortable but not dangerous',
+                       'Anxiety means I shouldn\'t fly', 'I\'m not sure what anxiety means',
+                       'Anxiety will overwhelm me completely']
+            },
+            
+            { id: 'aviationFacts', title: 'Aviation Facts', section: 'Fear Profile', render: renderInfoScreen,
+              content: `
+                <div class="stat-number">45,000+</div>
+                <p>Flights operate safely daily</p>
+                <div class="info-card" style="margin-top: 2rem;">
+                    <div class="stat-number">2,000x</div>
+                    <p>Safer in a plane than car</p>
+                </div>
+                <div class="info-card">
+                    <p style="font-size: 18px; color: var(--sky);">
+                        Turbulence has <strong>never</strong> caused a modern commercial crash
+                    </p>
+                </div>
+              `
+            },
+            
+            { id: 'avoidance', title: 'Avoidance Behaviors', section: 'Fear Profile', render: renderMultipleChoice,
+              question: 'How do you handle flying? (select all)',
+              subtext: 'Select all that apply',
+              options: ['Book then cancel', 'Only short flights', 'Drive long distances instead',
+                       'Use medication/alcohol', 'White-knuckle through it', 'Research crashes obsessively',
+                       'Check weather constantly', 'Haven\'t flown in years', 'Never booked due to fear']
+            },
+            
+            { id: 'willingness', title: 'Willingness', section: 'Fear Profile', render: renderScale,
+              question: 'How much are you willing to experience discomfort to do what matters?',
+              min: 1, max: 10,
+              minLabel: 'Must eliminate anxiety first',
+              maxLabel: 'Willing to feel anxious to fly'
+            },
+            
+            { id: 'crashBelief', title: 'Crash Probability', section: 'Fear Profile', render: renderSingleChoice,
+              question: 'What % chance your plane would crash?',
+              options: ['Less than 1%', '1-5%', '5-10%', '10-25%', '25-50%', 'More than 50%']
+            },
+            
+            { id: 'realityCheck', title: 'Reality Check', section: 'Fear Profile', render: renderInfoScreen,
+              content: `
+                <div class="info-card">
+                    <div class="stat-number">0.00001%</div>
+                    <p>Actual crash chance</p>
+                    <p style="margin-top: 15px; color: var(--muted);">That's 1 in 11 million</p>
+                </div>
+                <p style="font-size: 18px; margin-top: 30px;">
+                    You're more likely to be struck by lightning...<br>
+                    <span style="color: var(--sky); font-size: 24px;">twice!</span>
+                </p>
+              `
+            },
+            
+            { id: 'valuesRanking', title: 'Values Clarification', section: 'ACT Values & Readiness', render: renderSingleChoice,
+              question: 'What matters MOST in your life?',
+              subtext: 'Choose your top priority',
+              options: ['Family connection', 'Career/achievement', 'Adventure/experiences',
+                       'Personal growth', 'Independence/freedom', 'Health/wellbeing']
+            },
+            
+            { id: 'lifeLimitation', title: 'Life Limitation', section: 'ACT Values & Readiness', render: renderScale,
+              question: 'How much has fear of flying limited your life?',
+              min: 0, max: 10,
+              minLabel: 'No impact',
+              maxLabel: 'Controls major decisions'
+            },
+            
+            { id: 'reasonForChange', title: 'Reason for Change', section: 'ACT Values & Readiness', render: renderSingleChoice,
+              question: 'Why do you want to overcome this now?',
+              options: ['Specific important event coming up', 'General desire for more freedom',
+                       'Tired of missing out on life', 'Someone I love is encouraging me',
+                       'Feel ashamed/embarrassed about fear', 'Career necessity', 'Just can\'t take it anymore']
+            },
+            
+            { id: 'pilotInfo', title: 'Message from Pilots', section: 'ACT Values & Readiness', render: renderInfoScreen,
+              content: `
+                <div class="pilot-quote">
+                    <p>"In my 20 years flying, turbulence is just uncomfortable, never dangerous. Your coffee might spill, but the plane is built to handle 10x worse than anything nature throws at us."</p>
+                    <div class="pilot-attribution">
+                        - Captain Sarah Chen<br>15,000 flight hours
+                    </div>
+                </div>
+                <p style="margin-top: 30px; color: var(--muted);">Developed with airline pilots from:</p>
+                <p style="font-size: 20px; margin-top: 10px;">American • United • Delta</p>
+              `
+            },
+            
+            { id: 'previousAttempts', title: 'Previous Attempts', section: 'ACT Values & Readiness', render: renderMultipleChoice,
+              question: 'What have you tried? (select all)',
+              subtext: 'Select all that apply',
+              options: ['Medication (Xanax, etc.)', 'Alcohol', 'Therapy/counseling', 'Self-help books/videos',
+                       'Other apps', 'Breathing exercises', 'Hypnosis', 'Nothing formal', 'White-knuckling']
+            },
+            
+            { id: 'cognitiveF fusion', title: 'Thought Fusion', section: 'ACT Values & Readiness', render: renderSingleChoice,
+              question: 'Rate your agreement: "My anxious thoughts are facts about danger"',
+              options: ['Strongly agree', 'Agree', 'Neutral', 'Disagree', 'Strongly disagree']
+            },
+            
+            { id: 'commitment', title: 'Commitment Level', section: 'ACT Values & Readiness', render: renderScale,
+              question: 'How committed to overcoming this?',
+              min: 1, max: 10,
+              minLabel: 'Not ready',
+              maxLabel: 'Whatever it takes'
+            },
+            
+            { id: 'practiceWillingness', title: 'Practice Willingness', section: 'ACT Values & Readiness', render: renderSingleChoice,
+              question: 'Can you commit 15 min/day for 14 days?',
+              options: ['Yes, absolutely', 'Yes, I think so', 'Not sure', 'Probably not']
+            },
+            
+            { id: 'learningStyle', title: 'Learning Style', section: 'ACT Values & Readiness', render: renderSingleChoice,
+              question: 'How do you learn best?',
+              options: ['Video', 'Audio', 'Written', 'Interactive', 'Combination']
+            },
+            
+            { id: 'support', title: 'Support System', section: 'ACT Values & Readiness', render: renderSingleChoice,
+              question: 'Who could fly with you for support?',
+              options: ['Partner/spouse', 'Family member', 'Friend', 'Would fly alone', 'Not sure']
+            },
+            
+            { id: 'age', title: 'Age Range', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Your age:',
+              options: ['18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '75+']
+            },
+            
+            { id: 'gender', title: 'Gender', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Gender:',
+              options: ['Male', 'Female', 'Non-binary', 'Prefer not to say']
+            },
+            
+            { id: 'income', title: 'Annual Income', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Annual household income:',
+              options: ['Under $50k', '$50k-$75k', '$75k-$100k', '$100k-$150k', '$150k-$200k', 'Over $200k', 'Prefer not to say']
+            },
+            
+            { id: 'occupation', title: 'Occupation', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Your occupation:',
+              options: ['Executive/C-Suite', 'Sales/Business Development', 'Healthcare Professional', 
+                       'Technology/Engineering', 'Education', 'Finance/Banking', 'Entrepreneur/Business Owner',
+                       'Creative/Media', 'Government/Military', 'Student', 'Retired', 'Other']
+            },
+            
+            { id: 'location', title: 'Geographic Location', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Your location:',
+              options: ['Northeast US', 'Southeast US', 'Midwest US', 'Southwest US', 'West Coast US',
+                       'Canada', 'UK/Ireland', 'Europe', 'Asia-Pacific', 'Latin America', 'Other']
+            },
+            
+            { id: 'education', title: 'Education Level', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Highest education:',
+              options: ['High school', 'Some college', 'Associate degree', 'Bachelor\'s degree',
+                       'Master\'s degree', 'Doctoral degree', 'Professional degree (MD, JD, etc.)']
+            },
+            
+            { id: 'familyStatus', title: 'Family Status', section: 'Demographics & ICP Data', render: renderSingleChoice,
+              question: 'Family situation:',
+              options: ['Single, no children', 'Single, with children', 'Married/partnered, no children',
+                       'Married/partnered, with children', 'Prefer not to say']
+            },
+            
+            { id: 'currentScore', title: 'Your Current Flight Confidence', section: 'Results & Scoring', render: renderCurrentScore },
+            { id: 'processing', title: 'Analyzing profile', section: 'Results & Scoring', render: renderLoadingScreen },
+            { id: 'projectedScore', title: 'Your 7-Day Projection', section: 'Results & Scoring', render: renderProjectedScore },
+            { id: 'summary', title: 'Your 30-Day Path', section: 'Results & Scoring', render: renderSummary },
+            
+            { id: 'actPath', title: 'ACT-Based Success Path', section: 'Results & Scoring', render: renderInfoScreen,
+              content: `
+                <h3 style="text-align: left; margin-bottom: 1.5rem;">Your personalized program will help you:</h3>
+                <div style="text-align: left; display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; gap: 1rem; align-items: start;">
+                        <span style="color: var(--sky); font-size: 1.5rem;">✓</span>
+                        <p>Clarify what truly matters beyond fear</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: start;">
+                        <span style="color: var(--sky); font-size: 1.5rem;">✓</span>
+                        <p>Build willingness to feel anxiety</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: start;">
+                        <span style="color: var(--sky); font-size: 1.5rem;">✓</span>
+                        <p>Defuse from catastrophic thoughts</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: start;">
+                        <span style="color: var(--sky); font-size: 1.5rem;">✓</span>
+                        <p>Take values-based action (flying!)</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: start;">
+                        <span style="color: var(--sky); font-size: 1.5rem;">✓</span>
+                        <p>Develop psychological flexibility</p>
+                    </div>
+                </div>
+              `
+            },
+            
+            { id: 'attribution', title: 'How You Found Us', section: 'Conversion & Customization', render: renderSingleChoice,
+              question: 'How did you find ReadytoFly?',
+              options: ['Google search', 'Social media (Facebook/Instagram)', 'TikTok/YouTube',
+                       'Therapist recommendation', 'Friend/family', 'Reddit/Forum', 'News article', 'App Store', 'Other']
+            },
+            
+            { id: 'budget', title: 'Budget Expectations', section: 'Conversion & Customization', render: renderSingleChoice,
+              question: 'What would you invest to fly confidently?',
+              options: ['Less than $50', '$50-$100', '$100-$200', '$200-$500', 'Whatever it takes', 'Not sure']
+            },
+            
+            { id: 'programInterests', title: 'Program Interests', section: 'Conversion & Customization', render: renderMultipleChoice,
+              question: 'What appeals most about our program?',
+              subtext: 'Select all that apply',
+              options: ['Evidence-based CBT + ACT', 'Gradual exposure', 'No medication needed',
+                       'Practice from home', 'Proven success rate', 'One-time cost', '30-day guarantee']
+            },
+            
+            { id: 'authority', title: 'Evidence-Based Approach', section: 'Conversion & Customization', render: renderInfoScreen,
+              content: `
+                <div class="info-card">
+                    <p style="font-size: 18px;">
+                        Developed with clinical psychologists, pilots, aviation safety experts
+                    </p>
+                    <div style="margin-top: 20px;">
+                        <div class="stat-number">95%</div>
+                        <p>Success Rate</p>
+                    </div>
+                </div>
+                <p style="margin-top: 30px; color: var(--sky); font-size: 24px;">
+                    12,847 successful graduates
+                </p>
+              `
+            },
+            
+            { id: 'finalCommitment', title: 'Ready to Transform?', section: 'Conversion & Customization', render: renderSingleChoice,
+              question: 'Are you ready to commit 15 minutes daily for 14 days?',
+              subtext: 'This is what the program requires',
+              options: ['✅ Yes, I\'m ready', '❌ No, not yet']
+            }
+        ];
+
+        // ============================================
+        // HANDLERS
+        // ============================================
+        function selectSingleOption(stepId, option) {
+            state.answers[stepId] = option;
+            setTimeout(() => navigate(1), 300);
+        }
+
+        function selectMultipleOption(stepId, option) {
+            if (!state.answers[stepId]) state.answers[stepId] = [];
+            
+            const index = state.answers[stepId].indexOf(option);
+            if (index > -1) {
+                state.answers[stepId].splice(index, 1);
+            } else {
+                state.answers[stepId].push(option);
+            }
+            
+            renderStep();
+        }
+
+        function updateField(field, value) {
+            state.answers[field] = value;
+            if (document.getElementById('firstName')) {
+                checkAccountForm();
+            }
+        }
+
+        function checkAccountForm() {
+            const firstName = document.getElementById('firstName')?.value;
+            const lastName = document.getElementById('lastName')?.value;
+            const email = document.getElementById('email')?.value;
+            const password = document.getElementById('password')?.value;
+            const consent = document.getElementById('consent')?.checked;
+            
+            const isValid = firstName && lastName && email && password && consent &&
+                           email.includes('@') && password.length >= 6;
+            
+            dom.continueBtn.disabled = !isValid;
+        }
+
+        function initSlider(stepId, min, max, initialValue) {
+            const track = document.getElementById('sliderTrack');
+            const thumb = document.getElementById('sliderThumb');
+            const fill = document.getElementById('sliderFill');
+            const valueDisplay = document.getElementById('sliderValue');
+            
+            let isDragging = false;
+            
+            function updateSlider(clientX) {
+                const rect = track.getBoundingClientRect();
+                let percent = (clientX - rect.left) / rect.width;
+                percent = Math.max(0, Math.min(1, percent));
+                
+                const value = Math.round(min + percent * (max - min));
+                state.answers[stepId] = value;
+                
+                thumb.style.left = `${percent * 100}%`;
+                fill.style.width = `${percent * 100}%`;
+                valueDisplay.textContent = value;
+            }
+            
+            track.addEventListener('click', (e) => updateSlider(e.clientX));
+            
+            thumb.addEventListener('mousedown', () => { isDragging = true; });
+            document.addEventListener('mouseup', () => { isDragging = false; });
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) updateSlider(e.clientX);
+            });
+            
+            thumb.addEventListener('touchstart', () => { isDragging = true; });
+            document.addEventListener('touchend', () => { isDragging = false; });
+            document.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches[0]) updateSlider(e.touches[0].clientX);
+            });
+        }
+
+        function calculateScore() {
+            let score = 100;
+            
+            const severity = state.answers.severity;
+            if (severity === 'Extreme - haven\'t flown in years') score -= 50;
+            else if (severity === 'Severe - avoid flying whenever possible') score -= 40;
+            else if (severity === 'Moderate - fly with significant distress') score -= 25;
+            else if (severity === 'Mild - nervous but can fly') score -= 15;
+            
+            const lastFlight = state.answers.lastFlight;
+            if (lastFlight === '10+ years ago' || lastFlight === 'Never flown due to fear') score -= 20;
+            else if (lastFlight === '5-10 years ago') score -= 15;
+            else if (lastFlight === '3-5 years ago') score -= 10;
+            
+            const triggers = state.answers.triggers || [];
+            score -= triggers.length * 3;
+            
+            return Math.max(score, 10);
+        }
+
+        function animateProjection(currentScore, targetScore, improvement) {
+            const path = document.getElementById('improvement-path');
+            const scoreEl = document.getElementById('projected-score');
+            
+            if (!path || !scoreEl) return;
+            
+            const L = path.getTotalLength();
+            const draw = L * (improvement / 100);
+            
+            path.style.strokeDasharray = `0, ${L}`;
+            path.style.strokeDashoffset = `-${(L * currentScore / 100)}`;
+            
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    path.style.transition = 'stroke-dasharray 1.5s ease-out';
+                    path.style.strokeDasharray = `${draw}, ${L - draw}`;
+                });
+            });
+            
+            let display = currentScore;
+            const steps = 30;
+            const stepInc = (targetScore - currentScore) / steps;
+            const interval = setInterval(() => {
+                display += stepInc;
+                if (display >= targetScore) { 
+                    display = targetScore; 
+                    clearInterval(interval); 
+                }
+                scoreEl.textContent = `${Math.round(display)}%`;
+            }, 50);
+        }
+
+        // ============================================
+        // ENGINE
+        // ============================================
+        function navigate(direction) {
+            const step = STEPS[state.currentIndex];
+            
+            if (direction === -1) {
+                state.backtracks++;
+            }
+            
+            if (direction === 1) {
+                if (step.id === 'finalCommitment') {
+                    const answer = state.answers[step.id];
+                    if (answer === '✅ Yes, I\'m ready') {
+                        submitData();
+                        alert('Excellent! Proceeding to your personalized program...');
+                    } else {
+                        state.answers.finalDecision = 'not_ready';
+                        submitData();
+                        alert('We understand. Check your email for a free breathing exercise.');
+                    }
+                    return;
+                }
+            }
+            
+            state.currentIndex = Math.max(0, Math.min(STEPS.length - 1, state.currentIndex + direction));
+            renderStep();
+        }
+
+        function renderStep() {
+            const step = STEPS[state.currentIndex];
+            
+            state.stepTimestamps[state.currentIndex] = new Date();
+            if (state.currentIndex > 0 && state.stepTimestamps[state.currentIndex - 1]) {
+                const duration = new Date() - state.stepTimestamps[state.currentIndex - 1];
+                state.stepDurations[state.currentIndex - 1] = duration;
+            }
+            
+            const progress = ((state.currentIndex + 1) / STEPS.length) * 100;
+            dom.progressFill.style.width = `${progress}%`;
+            
+            dom.sectionLabel.textContent = step.section;
+            
+            toggleClass(dom.backBtn, 'hidden', state.currentIndex === 0);
+            
+            dom.container.innerHTML = '';
+            dom.container.className = 'question-container';
+            
+            const stepNumber = state.currentIndex + 1;
+            
+            step.render(step, stepNumber);
+            
+            announce(`Step ${stepNumber} of ${STEPS.length}: ${step.title}`);
+        }
+
+        function submitData() {
+            if (state.submitted) return;
+            state.submitted = true;
+            
+            if (state.currentIndex > 0 && state.stepTimestamps[state.currentIndex]) {
+                const duration = new Date() - state.stepTimestamps[state.currentIndex];
+                state.stepDurations[state.currentIndex] = duration;
+            }
+            
+            const completeData = {
+                sessionId: state.sessionId,
+                timestamp: new Date().toISOString(),
+                
+                firstName: state.answers.firstName || '',
+                lastName: state.answers.lastName || '',
+                email: state.answers.email || '',
+                phone: state.answers.phone || '',
+                
+                completionStatus: state.currentIndex === STEPS.length - 1 ? 'completed' : 'partial',
+                totalDurationMs: new Date() - state.startTime,
+                finalScore: state.score,
+                stepsCompleted: state.currentIndex + 1,
+                totalSteps: STEPS.length,
+                
+                answers: state.answers,
+                finalCommitment: state.answers.finalCommitment || 'not_answered',
+                
+                backtracks: state.backtracks,
+                userAgent: navigator.userAgent,
+                screenWidth: window.innerWidth,
+                isMobile: window.innerWidth < 768
+            };
+            
+            console.log('Submitting data:', completeData);
+            
+            if (navigator.sendBeacon) {
+                const blob = new Blob([JSON.stringify(completeData)], {type: 'application/json'});
+                navigator.sendBeacon(CONFIG.WEBHOOK_URL, blob);
+            } else {
+                fetch(CONFIG.WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(completeData),
+                    keepalive: true
+                }).catch(err => console.error('Submit error:', err));
+            }
+        }
+
+        // ============================================
+        // BOOT
+        // ============================================
+        dom.continueBtn.onclick = () => navigate(1);
+        dom.backBtn.onclick = () => navigate(-1);
+        
+        window.addEventListener('beforeunload', () => {
+            if (!state.submitted && state.currentIndex > 0) {
+                submitData();
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStep();
+        });
+    </script>
+</body>
+</html>
